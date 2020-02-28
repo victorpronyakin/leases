@@ -1,0 +1,46 @@
+<html>
+<head>
+    <style>
+        .button {
+            font-weight: bold;
+            outline: none;
+            vertical-align: middle;
+            background-color: transparent;
+            border: 1px solid #e2e5ec;
+            color: #595d6e!important;
+            padding: 10px 20px;
+            text-decoration: none;
+        }
+        .button:hover, .button:active, .button:focus{
+            color: #595d6e!important;
+            border-color: #e2e5ec;
+            background-color: #f4f5f8;
+        }
+    </style>
+</head>
+<body>
+<p>{{ messageText|raw }}</p>
+<br>
+<p>
+    {% if contactReminder.allCorrect %}
+        <a href="{{ allCorrectLink }}" class="button">All Correct</a>
+    {% endif %}
+    {% if contactReminder.updateInfo %}
+        <a href="mailto:{{ (contactReminder.updateInfoEmail is not empty) ? contactReminder.updateInfoEmail : 'info@exprop.co.za' }}?subject=Update Me Contact Info" class="button">
+            Update Info
+        </a>
+    {% endif %}
+    {% if contactReminder.noLonger %}
+        <a href="{{ noLongerLink }}" class="button">{{ (contactReminder.type == 1) ? 'No Longer The Contact' : 'No Longer The Emergency Contact' }}</a>
+    {% endif %}
+</p>
+{#<br>#}
+{#<p>#}
+{#    Kind Regards,#}
+{#    <br>#}
+{#    <strong>The EXPROP Team</strong>#}
+{#    <br>#}
+{#    <a href="mailto:info@exprop.co.za">info@exprop.co.za</a>#}
+{#</p>#}
+</body>
+</html>

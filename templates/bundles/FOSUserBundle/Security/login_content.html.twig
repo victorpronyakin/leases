@@ -1,0 +1,41 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+<div class="kt-login__signin">
+    <div class="kt-login__head">
+        <h3 class="kt-login__title">Sign In To Admin</h3>
+    </div>
+    {% if error %}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <div class="alert-text">Incorrect email or password. Please try again.</div>
+            <div class="alert-close">
+                <i class="fa fa-times fa-sm" data-dismiss="alert"></i>
+            </div>
+        </div>
+    {% endif %}
+    <form class="kt-form" action="{{ path("fos_user_security_check") }}" method="post">
+        {% if csrf_token %}
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+        {% endif %}
+        <div class="input-group">
+            <input class="form-control" type="email" placeholder="Email" id="username" name="_username" value="{{ last_username }}" required="required" autocomplete="off"/>
+        </div>
+        <div class="input-group">
+            <input class="form-control" type="password" placeholder="Password" id="password" name="_password" required="required"/>
+        </div>
+        <div class="row kt-login__extra">
+            <div class="col">
+                <label class="kt-checkbox">
+                    <input type="checkbox" id="remember_me" name="_remember_me" value="on" /> Remember me
+                    <span></span>
+                </label>
+            </div>
+            <div class="col kt-align-right">
+                <a href="{{ path('fos_user_resetting_request') }}" class="kt-login__link">Forget Password ?</a>
+            </div>
+        </div>
+        <div class="kt-login__actions">
+            <input type="submit" id="_submit" class="btn btn-brand btn-elevate kt-login__btn-primary" name="_submit" value="Login" />
+        </div>
+    </form>
+</div>
+

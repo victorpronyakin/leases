@@ -1,0 +1,510 @@
+{% extends 'sites_and_leases/layout.html.twig' %}
+
+{% block title %}Edit Landlord{% endblock %}
+
+{% block breadcrumbs %}
+    <h3 class="kt-subheader__title">Edit Landlord</h3>
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('assets/css/demo5/pages/wizard/wizard-3.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/vendors/general/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/vendors/general/select2/dist/css/select2.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/vendors/general/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/vendors/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        .kt-wizard-v3__wrapper{
+            position: relative;
+        }
+        .kt-wizard-v3__content{
+            width: 60%;
+            padding: 4rem 0 5rem;
+        }
+        .kt-wizard-v3__content .kt-wizard-v3__form {
+            margin-top: 3rem;
+        }
+        .kt-wizard-v3__content .kt-form__section{
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eeeef4;
+        }
+        .kt-wizard-v3__content .kt-form__section.without-bottom-border{
+            padding-bottom: 0;
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+        .lastUpdated {
+            position: absolute;
+            right: 50px;
+            padding-top: 20px;
+        }
+        .kt-wizard-v3 .kt-wizard-v3__nav .kt-wizard-v3__nav-items .kt-wizard-v3__nav-item:last-child:after{
+            content: none!important;
+        }
+        .kt-wizard-v3 .kt-wizard-v3__nav .kt-wizard-v3__nav-items .kt-wizard-v3__nav-item{
+            flex: 0 0 33%;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="kt-container  kt-grid__item kt-grid__item--fluid">
+
+        <div class="kt-portlet">
+            <div class="kt-portlet__body kt-portlet__body--fit">
+                <div class="kt-grid kt-wizard-v3 kt-wizard-v3--white" id="kt_wizard_v3" data-ktwizard-state="between">
+                    <div class="kt-grid__item">
+                        <!--begin: Form Wizard Nav -->
+                        <div class="kt-wizard-v3__nav">
+                            <div class="kt-wizard-v3__nav-items">
+                                <!--doc: Replace A tag with SPAN tag to disable the step link click -->
+                                <a class="kt-wizard-v3__nav-item" href="#" data-ktwizard-type="step" data-ktwizard-state="current">
+                                    <div class="kt-wizard-v3__nav-body">
+                                        <div class="kt-wizard-v3__nav-label">
+                                            <span>1</span> Basic Info
+                                        </div>
+                                        <div class="kt-wizard-v3__nav-bar"></div>
+                                    </div>
+                                </a>
+                                <a class="kt-wizard-v3__nav-item" href="#" data-ktwizard-type="step" data-ktwizard-state="pending">
+                                    <div class="kt-wizard-v3__nav-body">
+                                        <div class="kt-wizard-v3__nav-label">
+                                            <span>2</span> Documents
+                                        </div>
+                                        <div class="kt-wizard-v3__nav-bar"></div>
+                                    </div>
+                                </a>
+                                <a class="kt-wizard-v3__nav-item" href="#" data-ktwizard-type="step" data-ktwizard-state="pending">
+                                    <div class="kt-wizard-v3__nav-body">
+                                        <div class="kt-wizard-v3__nav-label">
+                                            <span>3</span> Contacts
+                                        </div>
+                                        <div class="kt-wizard-v3__nav-bar"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <!--end: Form Wizard Nav -->
+
+                    </div>
+                    <div class="kt-grid__item kt-grid__item--fluid kt-wizard-v3__wrapper" style="position: relative;">
+                        <div class="lastUpdated">
+                            <span>Last Updated: <strong>{{ landlord.updated|date('d M Y H:i') }}</strong></span>
+                        </div>
+                        <!--begin: Form Wizard Step 1-->
+                        <div class="kt-wizard-v3__content" data-ktwizard-type="step-content" data-ktwizard-state="current">
+                            <form id="kt_form_1" method="post" action="{{ path('landlord_edit', {id: landlord.id}) }}" enctype="multipart/form-data">
+                                <div class="kt-heading kt-heading--md">Basic Info</div>
+                                <div class="kt-form__section without-bottom-border kt-form__section--first">
+                                    <div class="kt-wizard-v3__form mt-1">
+                                        <div class="form-group">
+                                            <label>Name</label>
+                                            <input type="text" class="form-control" name="landlord[name]" placeholder="Landlord Name" value="{{ landlord.name }}" aria-describedby="landlord_name-error">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Type</label>
+                                            <select name="landlord[type]" class="form-control" aria-describedby="landlord_type-error">
+                                                <option value="">Landlord type</option>
+                                                {% for landlordType in landlordTypes %}
+                                                    <option value="{{ landlordType.id }}" {{ (landlord.type is defined and landlord.type.id is defined and landlord.type.id == landlordType.id) ? 'selected' : '' }} >
+                                                        {{ landlordType.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Landlord ID / Registration Number</label>
+                                            <input type="text" class="form-control" name="landlord[number]" placeholder="Landlord ID / Registration Number" value="{{ landlord.number }}" aria-describedby="landlord_number-error">
+                                        </div>
+                                        <div class="form-group" id="locationField">
+                                            <label>Address Line 1</label>
+                                            <input type="text" id="googleAddress" class="form-control" name="landlord[address1]" placeholder="Address 1" value="{{ landlord.address1 }}" aria-describedby="landlord_address1-error">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Address Line 2</label>
+                                            <input type="text" id="googleAddress2" class="form-control" name="landlord[address2]" placeholder="Address 2" value="{{ landlord.address2 }}" aria-describedby="landlord_address2-error">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xl-6">
+                                                <div class="form-group">
+                                                    <label>City</label>
+                                                    <input type="text" class="form-control" id="locality" name="landlord[city]" placeholder="City" value="{{ landlord.city }}" aria-describedby="landlord_city-error">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="form-group">
+                                                    <label>Province/State</label>
+                                                    <input type="text" class="form-control" id="administrative_area_level_1" name="landlord[state]" placeholder="Province/State" value="{{ landlord.city }}" aria-describedby="landlord_state-error">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xl-6">
+                                                <div class="form-group">
+                                                    <label>Postal Code</label>
+                                                    <input type="text" class="form-control" id="postal_code" name="landlord[postalCode]" placeholder="Postal Code" value="{{ landlord.postalCode }}" aria-describedby="landlord_postcode-error">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="form-group">
+                                                    <label>Country</label>
+                                                    <input type="text" name="landlord[country]" value="{{ landlord.country }}" id="country" class="form-control" placeholder="Country">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>BEE Status</label>
+                                            <select name="landlord[beeStatus]" class="form-control" aria-describedby="landlord_beeStatus-error" id="beeStatus">
+                                                <option value="">Select BEE Status</option>
+                                                {% for beeStatus in beeStatuses %}
+                                                    <option value="{{ beeStatus.id }}" {{ (landlord.beeStatus is defined and landlord.beeStatus.id is defined and landlord.beeStatus.id == beeStatus.id) ? 'selected' : '' }}>
+                                                        {{ beeStatus.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group" style="{{ (landlord.beeStatus is defined and landlord.beeStatus.id is defined and landlord.beeStatus.id != 1) ? '' : 'display: none;' }}">
+                                            <label>BEE Certificate Date of Expiry</label>
+                                            <div class="input-group date" >
+                                                <input type="text" class="form-control" value="{{ (landlord.beeExpiry is defined and landlord.beeExpiry is not empty) ? landlord.beeExpiry|date('d M Y') : '' }}" readonly name="landlord[beeExpiry]" placeholder="Select date" id="landlord_beeExpiry" aria-describedby="landlord_beeExpiry-error"/>
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">
+                                                        <i class="la la-calendar-o"></i>
+                                                    </span>
+                                                </div>
+                                                <div id="landlord_beeExpiry-error" class="invalid-feedback">
+                                                    This field is required.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="kt-heading kt-heading--md">Bank Account Details</div>
+                                <div class="kt-form__section without-bottom-border">
+                                    <div class="kt-wizard-v3__form mt-1">
+                                        <div class="form-group">
+                                            <label>Account Holder</label>
+                                            <input type="text" class="form-control" name="landlord[accountHolder]" placeholder="Account Holder" value="{{ landlord.accountHolder }}" aria-describedby="landlord_accountHolder-error">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Bank Name</label>
+                                            <input type="text" class="form-control" name="landlord[bankName]" placeholder="Bank Name" value="{{ landlord.bankName }}" aria-describedby="landlord_bankName-error">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Branch Name</label>
+                                            <input type="text" class="form-control" name="landlord[branchName]" placeholder="Branch Name" value="{{ landlord.branchName }}" aria-describedby="landlord_branchName-error">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Branch Code</label>
+                                            <input type="text" class="form-control" name="landlord[branchCode]" placeholder="Branch Code" value="{{ landlord.branchCode }}" aria-describedby="landlord_branchCode-error">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Account Number</label>
+                                            <input type="text" class="form-control" name="landlord[accountNumber]" placeholder="Account Number" value="{{ landlord.accountNumber }}" aria-describedby="landlord_accountNumber-error">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Account Type</label>
+                                            <input type="text" class="form-control" name="landlord[accountType]" placeholder="Account Type" value="{{ landlord.accountType }}" aria-describedby="landlord_accountType-error">
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-12 col-form-label">Upload Proof of Bank Account:</label>
+                                            <div class="col-12">
+                                                <div class="upload-file-container {{ (landlord.bankDocument.path is defined and landlord.bankDocument.path is not empty) ? 'uploaded' : '' }}">
+                                                    <input type="hidden" class="upload-file-container__fake-upload" name="landlord[bankDocument]" value="{{ (landlord.bankDocument.path is defined and landlord.bankDocument.path is not empty) ? landlord.bankDocument.path : '' }}">
+                                                    <input type="file" class="upload-file-container__custom-upload" name="landlord[bankDocument]" value="{{ (landlord.bankDocument.path is defined and landlord.bankDocument.path is not empty) ? landlord.bankDocument.path : '' }}" hidden="hidden" id="bankDocumentInput">
+                                                    <button class="upload-file-container__upload-button btn btn-sm btn-info">
+                                                        <i class="fas fa-plus-circle"></i>
+                                                        <span>Choose a file</span>
+                                                    </button>
+                                                    <div class="upload-file-container__file-uploaded">
+                                                        <div class="upload-file-container__close">
+                                                            <i class="fa fa-times"></i>
+                                                        </div>
+                                                        <i class="fas fa-cloud-download-alt"></i>
+                                                        <span class="upload-file-container__file-name">
+                                                            {% if landlord.bankDocument.name is defined and landlord.bankDocument.name is not empty %}
+                                                                <a href="{{ landlord.bankDocument.path }}" target="_blank">{{ landlord.bankDocument.name }}</a>
+                                                            {% endif %}
+                                                        </span>
+                                                        <span class="upload-file-container__file-date">
+                                                            {{ ( landlord.bankDocument.created is defined and  landlord.bankDocument.created is not empty) ?  landlord.bankDocument.created|date('d M Y') : '' }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-xl-3 col-sm-6 col-form-label">VAT Register</label>
+                                            <div class="col-xl-3 col-sm-6">
+                                                <span class="kt-switch">
+                                                    <label>
+                                                        <input type="checkbox" name="landlord[vatStatus]" {{ (landlord.vatStatus is defined and landlord.vatStatus == true) ? 'checked' : '' }} id="vatStatus"/>
+                                                        <span></span>
+                                                    </label>
+                                                </span>
+                                            </div>
+                                            <div class="col-xl-6" style="{{ (landlord.vatStatus is defined and landlord.vatStatus == true) ? '' : 'display: none;' }}">
+                                                <input type="text" class="form-control" id="vatNumber" name="landlord[vatNumber]" placeholder="VAT Registration Number" value="{{ landlord.vatNumber }}" aria-describedby="landlord_vatNumber-error">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="kt-heading kt-heading--md">Comments</div>
+                                <div class="kt-form__section kt-form__section--last">
+                                    <div class="kt-wizard-v3__form mt-1" id="commentForm">
+                                        {% if landlordComments is not empty %}
+                                            {% for comment in landlordComments %}
+                                                <div class="comment-item">
+                                                    <input type="hidden" name="comments[{{ loop.index }}][id]" value="{{ comment.id }}">
+                                                    <div class="form-group">
+                                                        <textarea class="form-control" name="comments[{{ loop.index }}][comment]" placeholder="Type comment...">{{ comment.comment }}</textarea>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <label class="btn-label">
+                                                                Date of comment:
+                                                                <span class="font-weight-bold">{{ comment.updated|date('d M Y H:i') }}</span>
+                                                            </label>
+                                                        </div>
+                                                        {% if userPermission.edit is defined and userPermission.edit == true %}
+                                                            <div class="col-md-6 text-right">
+                                                                <button type="button" class="btn btn-danger btn-sm removeComment">Remove Comment</button>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <hr>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    {% if userPermission.edit is defined and userPermission.edit == true %}
+                                        <div class="row">
+                                            <div class="col-12 text-center">
+                                                <button type="button" class="btn btn-info" id="addComment">Add Comment</button>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="kt-form__actions text-right">
+                                    {% if userPermission.edit is defined and userPermission.edit == true %}
+                                        <button name="submit_1" class="btn btn-success btn-md btn-tall btn-wide kt-font-bold kt-font-transform-u">
+                                            Save
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </form>
+                        </div>
+                        <!--end: Form Wizard Step 1-->
+
+                        <!--begin: Form Wizard Step 2-->
+                        <div class="kt-wizard-v3__content" data-ktwizard-type="step-content">
+                            <form id="kt_form_2" method="post" action="{{ path('landlord_edit', {id: landlord.id}) }}" enctype="multipart/form-data">
+                                <div class="kt-heading kt-heading--md">Supporting Documents</div>
+                                <div class="kt-form__section kt-form__section--first">
+                                    <div class="kt-wizard-v3__form" id="documentsForm">
+                                        <div class="form-group mb-1">
+                                            <label>Supporting Document Status</label>
+                                            <select name="landlord[documentStatus]" class="form-control" aria-describedby="landlord[documentStatus]-error" aria-invalid="false">
+                                                <option value="">Select a Supporting Document Status</option>
+                                                {% for documentStatus in documentStatuses %}
+                                                    <option value="{{ documentStatus.id }}" {{ (landlord.documentStatus is defined and landlord.documentStatus.id is defined and landlord.documentStatus.id == documentStatus.id) ? 'selected' : '' }}>
+                                                        {{ documentStatus.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <span class="form-control-plaintext">
+                                                Last Updated:
+                                                <span class="kt-font-bolder">
+                                                    {{ (landlord.documentStatusUpdated is not empty) ? landlord.documentStatusUpdated|date('d M Y') : '' }}
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <hr>
+                                        {% if landlordDocuments is defined and landlordDocuments is not empty %}
+                                            {% for landlordDocument in landlordDocuments %}
+                                                <div class="document-item">
+                                                    <input type="hidden" value="{{ landlordDocument.id }}" name="document[{{ loop.index }}][id]">
+                                                    <div class="form-group">
+                                                        <label>Type</label>
+                                                        <select name="document[{{ loop.index }}][type]" class="form-control" aria-describedby="document_type-error" aria-invalid="false">
+                                                            <option value="">Select a Document Type</option>
+                                                            {% for documentType in documentTypes %}
+                                                                <option value="{{ documentType.id }}" {{ (landlordDocument.type is defined and landlordDocument.type.id is defined and landlordDocument.type.id == documentType.id) ? 'selected' : '' }}>
+                                                                    {{ documentType.name }}
+                                                                </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-12 col-form-label">Upload File:</label>
+                                                        <div class="col-12">
+                                                            <div class="upload-file-container {{ (landlordDocument.document is defined and landlordDocument.document is not empty) ? 'uploaded' : '' }}">
+                                                                <input type="hidden" name="document[{{ loop.index }}][name]" value="{{ landlordDocument.name }}">
+                                                                <input type="hidden" class="upload-file-container__fake-upload" name="document[{{ loop.index }}][document]" value="{{ landlordDocument.document }}">
+                                                                <input  type="file" name="document[{{ loop.index }}][document]" hidden="hidden" class="documentInput upload-file-container__custom-upload">
+                                                                <button class="upload-file-container__upload-button btn btn-sm btn-info">
+                                                                    <i class="fas fa-plus-circle"></i>
+                                                                    <span>Choose a file</span>
+                                                                </button>
+                                                                <div class="upload-file-container__file-uploaded">
+                                                                    <div class="upload-file-container__close">
+                                                                        <i class="fa fa-times"></i>
+                                                                    </div>
+                                                                    <i class="fas fa-cloud-download-alt"></i>
+                                                                    <span class="upload-file-container__file-name">
+                                                                        <a href="{{ landlordDocument.document }}" target="_blank">{{ (landlordDocument.name is defined and landlordDocument.name is not empty) ? landlordDocument.name : '' }}</a>
+                                                                    </span>
+                                                                    <span class="upload-file-container__file-date">
+                                                                        {{ (landlordDocument.created is defined and landlordDocument.created is not empty) ? landlordDocument.created|date('d M Y') : '' }}
+                                                                    </span>
+                                                                </div>
+                                                                <div class="text-danger" style="display: none;">This field is required.</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% if userPermission.edit is defined and userPermission.edit == true %}
+                                                        <div class="col-12 text-right">
+                                                            <button type="button" class="btn btn-danger btn-sm removeDocument">Remove Document</button>
+                                                        </div>
+                                                    {% endif %}
+                                                    <hr>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    {% if userPermission.edit is defined and userPermission.edit == true %}
+                                        <div class="row">
+                                            <div class="col-12 text-center">
+                                                <button type="button" class="btn btn-info" id="addDocument">Add Supporting Document</button>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="kt-form__actions text-right">
+                                    {% if userPermission.edit is defined and userPermission.edit == true %}
+                                        <button name="submit_2" class="btn btn-success btn-md btn-tall btn-wide kt-font-bold kt-font-transform-u">
+                                            Save
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </form>
+                        </div>
+                        <!--end: Form Wizard Step 2-->
+
+                        <!--begin: Form Wizard Step 3-->
+                        <div class="kt-wizard-v3__content" data-ktwizard-type="step-content">
+                            <form id="kt_form_3" method="post" action="{{ path('landlord_edit', {id: landlord.id}) }}">
+                                <div class="kt-heading kt-heading--md">Contacts</div>
+                                <div class="kt-form__section kt-form__section--first">
+                                    <div class="kt-wizard-v3__form" id="contactsForm">
+                                        {% if landlordContacts is defined and landlordContacts is not empty %}
+                                            {% for landlordContact in landlordContacts %}
+                                                <div class="contact-item">
+                                                    <input type="hidden" value="{{ landlordContact.id }}" name="contact[{{ loop.index }}][id]">
+                                                    <div class="form-group">
+                                                        <label>Type</label>
+                                                        <select name="contact[{{ loop.index }}][type]" id="kt_select2__{{ loop.index }}" class="form-control kt-select2" style="width: 100%;">
+                                                            <option></option>
+                                                            {% for contactType in contactTypes %}
+                                                                <option value="{{ contactType.id }}" {{ (landlordContact.type is defined and landlordContact.type.id is defined and landlordContact.type.id == contactType.id) ? 'selected' : '' }}>
+                                                                    {{ contactType.name }}
+                                                                </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <div class="invalid-feedback">This field is required.</div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Name</label>
+                                                        <input type="text" class="form-control" name="contact[{{ loop.index }}][firstName]" placeholder="Name" value="{{ landlordContact.firstName }}" aria-describedby="contact_firstName-error">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Surname</label>
+                                                        <input type="text" class="form-control" name="contact[{{ loop.index }}][lastName]" placeholder="Surname" value="{{ landlordContact.lastName }}" aria-describedby="contact_lastName-error">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Company</label>
+                                                        <input type="text" class="form-control" name="contact[{{ loop.index }}][company]" placeholder="Company" value="{{ landlordContact.company }}" aria-describedby="contact_company-error">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Email</label>
+                                                        <input type="text" class="form-control" name="contact[{{ loop.index }}][email]" placeholder="Email" value="{{ landlordContact.email }}" aria-describedby="contact_email-error">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Mobile</label>
+                                                        <input type="tel" class="form-control" name="contact[{{ loop.index }}][mobile]" placeholder="Mobile" value="{{ landlordContact.mobile }}" aria-describedby="contact_mobile-error">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Landline</label>
+                                                        <input type="tel" class="form-control" name="contact[{{ loop.index }}][landline]" placeholder="Landline" value="{{ landlordContact.landline }}" aria-describedby="contact_landline-error">
+                                                    </div>
+                                                    {% if userPermission.edit is defined and userPermission.edit == true %}
+                                                        <div class="col-12 text-right">
+                                                            <button type="button" class="btn btn-danger btn-sm removeContact">Remove Contact</button>
+                                                        </div>
+                                                    {% endif %}
+                                                    <hr>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    {% if userPermission.edit is defined and userPermission.edit == true %}
+                                        <div class="row">
+                                            <div class="col-12 text-center">
+                                                <button type="button" class="btn btn-info" id="addContact">Add Contact</button>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="kt-form__actions text-right">
+                                    {% if userPermission.edit is defined and userPermission.edit == true %}
+                                        <button name="submit_3" class="btn btn-success btn-md btn-tall btn-wide kt-font-bold kt-font-transform-u">
+                                            Save
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </form>
+                        </div>
+                        <!--end: Form Wizard Step 3-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/vendors/general/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/select2/dist/js/select2.full.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/jquery-form/dist/jquery.form.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/jquery-validation/dist/jquery.validate.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/custom/js/vendors/jquery-validation.init.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/bootstrap-switch/dist/js/bootstrap-switch.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/custom/js/vendors/bootstrap-switch.init.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/custom/datatables/datatables.bundle.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        var documentTypes = [];
+        {% for documentType in documentTypes %}
+        documentTypes.push({
+            id: '{{ documentType.id }}',
+            name: '{{ documentType.name }}',
+        });
+        {% endfor %}
+        var contactTypes = [];
+        {% for contactType in contactTypes %}
+        contactTypes.push({
+            id: '{{ contactType.id }}',
+            name: '{{ contactType.name }}',
+        });
+        {% endfor %}
+        var documentIndex = {{ landlordDocuments|length }};
+        var contactIndex = {{ landlordContacts|length }};
+        var commentIndex = {{ landlordComments|length }};
+    </script>
+
+    <script src="{{ asset('assets/js/pages/landlord_edit.js') }}" type="text/javascript"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCliFm7C1H1t_O5MFiN-SB3luq867neo4Y&libraries=places&callback=initAutocomplete" async defer></script>
+{% endblock %}

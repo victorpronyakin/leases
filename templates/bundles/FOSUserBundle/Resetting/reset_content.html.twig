@@ -1,0 +1,50 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+<style>
+    .error.invalid-feedback{
+        display: block;
+    }
+    .error.invalid-feedback > ul{
+        list-style-type: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        padding-left: 1.6rem;
+        margin: 0;
+    }
+    .alert-text > ul{
+        padding-left: 0;
+        margin: 0;
+    }
+</style>
+
+<div class="kt-login__forgot" style="display: block;">
+    <div class="kt-login__head">
+        <h3 class="kt-login__title">Reset Password</h3>
+        <div class="kt-login__desc">Enter your new password:</div>
+    </div>
+    {% if form_errors(form) %}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <div class="alert-text">{{ form_errors(form) }}</div>
+            <div class="alert-close">
+                <i class="fa fa-times fa-sm" data-dismiss="alert"></i>
+            </div>
+        </div>
+    {% endif %}
+    {{ form_start(form, { 'action': path('fos_user_resetting_reset', {'token': token}), 'attr': { 'class': 'kt-form' } }) }}
+        <div class="input-group">
+            {{ form_widget(form.plainPassword.first, {'attr': { 'class': 'form-control', 'placeholder': 'New password' } }) }}
+            <div id="email-error" class="error invalid-feedback">{{ form_errors(form.plainPassword.first) }}</div>
+        </div>
+        <div class="input-group">
+            {{ form_widget(form.plainPassword.second, {'attr': { 'class': 'form-control', 'placeholder': 'Repeat new password' } }) }}
+            <div id="email-error" class="error invalid-feedback">{{ form_errors(form.plainPassword.second) }}</div>
+        </div>
+        <div>
+
+        </div>
+        <div class="kt-login__actions">
+            <input type="submit" id="kt_login_forgot_submit" class="btn btn-brand btn-elevate kt-login__btn-primary" value="Change password" />
+        </div>
+    {{ form_end(form) }}
+</div>
+

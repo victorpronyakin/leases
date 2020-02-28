@@ -1,0 +1,11 @@
+{% extends 'emails/template.html.twig' %}
+
+{% block content %}
+    This email is a reminder that we are missing LANDLORD supporting documents as follows:
+    <br><br>
+    Landlord Name: {{ landlordName }}<br>
+    Details of supporting documents: {{ documentType }}
+    <br><br>
+    Please <a href="{{ link }}">UPLOAD</a> these documents on the COLEASE platform
+{% endblock %}
+

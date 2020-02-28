@@ -1,0 +1,276 @@
+{% extends 'agent/layout.html.twig' %}
+
+{% block title %}Agent Billing{% endblock %}
+
+{% block breadcrumbs %}
+    <h3 class="kt-subheader__title">Agent Billing</h3>
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('assets/vendors/general/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/vendors/general/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        .table-show .table-show__label{
+            font-weight: normal;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .table-show .table-show__select{
+            width: auto;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="kt-container  kt-grid__item kt-grid__item--fluid">
+        <div class="kt-portlet kt-portlet--mobile">
+            <div class="kt-portlet__head kt-portlet__head--lg">
+                <div class="kt-portlet__head-label">
+                    <h3 class="kt-portlet__head-title">Agent Billing</h3>
+                </div>
+{#                <div class="kt-portlet__head-toolbar">#}
+{#                    <div class="kt-portlet__head-wrapper">#}
+{#                        <div class="kt-portlet__head-actions">#}
+{#                            {% if app.request.query.get('startMonth') is not empty and app.request.query.get('endMonth') is not empty %}#}
+{#                                <a href="{{ path('agent_billing_download') }}?{{ app.request.query.all|url_encode }}" class="btn btn-brand btn-elevate btn-icon-sm">#}
+{#                                    <i class="la la-download"></i>#}
+{#                                    Download Report#}
+{#                                </a>#}
+{#                            {% else %}#}
+{#                                <button class="btn btn-brand btn-elevate btn-icon-sm" disabled>#}
+{#                                    <i class="la la-download"></i>#}
+{#                                    Download Report#}
+{#                                </button>#}
+{#                            {% endif %}#}
+
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+            </div>
+
+            <div class="kt-portlet__body">
+                <form method="get" action="{{ path('agent_billing') }}" class="kt-form kt-form--label-right" id="search_form">
+                    <div class="row kt-margin-b-20">
+                        <div class="col-sm-6 kt-margin-b-10-tablet-and-mobile">
+                            <label>Start Month:</label>
+                            <div class='input-group'>
+                                <input type="text" required class="form-control" value="{{ app.request.query.get('startMonth') }}" readonly name="startMonth"  placeholder="Select Start Month" id="startMonthPicker"/>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">
+                                        <i class="la la-calendar-check-o"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 kt-margin-b-10-tablet-and-mobile">
+                            <label>End Month</label>
+                            <div class='input-group'>
+                                <input type="text" required class="form-control" value="{{ app.request.query.get('endMonth') }}" readonly name="endMonth"  placeholder="Select End Month" id="endMonthPicker"/>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">
+                                        <i class="la la-calendar-check-o"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row kt-margin-b-20">
+                        <div class="col-12">
+                            <div class="kt-checkbox-inline">
+                                <label class="kt-checkbox kt-checkbox--bold kt-checkbox--brand">
+                                    <input type="checkbox" name="billingInvoicedYes"
+                                            {{ app.request.query.get('billingInvoicedYes') is same as('on') ? 'checked' : '' }}>
+                                    Invoiced - Yes
+                                    <span></span>
+                                </label>
+                                <label class="kt-checkbox kt-checkbox--bold kt-checkbox--brand">
+                                    <input type="checkbox" name="billingInvoicedNo"
+                                            {{ app.request.query.get('billingInvoicedNo') is same as('on') ? 'checked' : '' }}>
+                                    Invoiced - No
+                                    <span></span>
+                                </label>
+                                <label class="kt-checkbox kt-checkbox--bold kt-checkbox--brand">
+                                    <input type="checkbox" name="billingPaidYes"
+                                            {{ app.request.query.get('billingPaidYes') is same as('on') ? 'checked' : '' }}>
+                                    Paid - Yes
+                                    <span></span>
+                                </label>
+                                <label class="kt-checkbox kt-checkbox--bold kt-checkbox--brand">
+                                    <input type="checkbox" name="billingPaidNo"
+                                            {{ app.request.query.get('billingPaidNo') is same as('on') ? 'checked' : '' }}>
+                                    Paid - No
+                                    <span></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row kt-margin-b-20">
+                        <div class="col-sm-4 kt-margin-b-10-tablet-and-mobile">
+                            <label>Site ID:</label>
+                            <input type="text" class="form-control" value="{{ app.request.query.get('number') }}" placeholder="Site ID" name="number">
+                        </div>
+                        <div class="col-sm-4 kt-margin-b-10-tablet-and-mobile">
+                            <label>Site Name:</label>
+                            <input type="text" class="form-control" value="{{ app.request.query.get('name') }}" placeholder="Site Name" name="name">
+                        </div>
+                        <div class="col-sm-4 kt-margin-b-10-tablet-and-mobile">
+                            <label>Agent Fee Type:</label>
+                            <select type="text" class="form-control" name="fee">
+                                <option value="">Select Agent Fee Type</option>
+                                <option value="1" {{ app.request.query.get('fee') == 1 ? 'selected' : '' }}>% of Monthly Lease</option>
+                                <option value="2" {{ app.request.query.get('fee') == 2 ? 'selected' : '' }}>% of Saving</option>
+                                <option value="3" {{ app.request.query.get('fee') == 3 ? 'selected' : '' }}>Fixed Monthly</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 text-right">
+                            <button type="submit" class="btn btn-primary btn-brand--icon" id="search">
+                                <span><i class="la la-search"></i> Search</span>
+                            </button>
+                            <button type="reset" class="btn btn-secondary btn-secondary--icon" id="reset">
+                                <span><i class="la la-close"></i>Reset</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                {% if app.request.query.get('startMonth') is not empty and app.request.query.get('endMonth') is not empty %}
+                    <div class="kt-separator kt-separator--border-dashed kt-separator--space-md"></div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="table-show">
+                                <label class="table-show__label">
+                                    Show
+                                    <select class="table-show__select custom-select custom-select-sm form-control form-control-sm" id="limitItems">
+                                        <option value="10" {{ (app.request.query.get('limit') == 10) ? 'selected' : '' }}>10</option>
+                                        <option value="25" {{ (app.request.query.get('limit') == 25 or app.request.query.get('limit') is empty) ? 'selected' : '' }}>25</option>
+                                        <option value="50" {{ (app.request.query.get('limit') == 50) ? 'selected' : '' }}>50</option>
+                                        <option value="100" {{ (app.request.query.get('limit') == 100) ? 'selected' : '' }}>100</option>
+                                    </select>
+                                    entries
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        {% set tableWidth = 1000 + (325 * rangeMonths|length) %}
+                        <table class="table table-bordered" style="width: {{ tableWidth }}px">
+                            <thead>
+                            <tr>
+                                <th style="width: 100px">Site ID</th>
+                                <th style="width: 100px">Site Name</th>
+                                <th style="width: 200px">Agent Fee Type(%/Amount)</th>
+                                <th style="width: 120px">Agent Saving</th>
+                                <th style="width: 130px">Lease Start Date</th>
+                                <th style="width: 120px">Lease End Date</th>
+                                <th style="width: 100px">Lease Term</th>
+                                <th style="width: 130px">Lease Escalation</th>
+                                {% if rangeMonths is not empty %}
+                                    {% for rangeMonth in rangeMonths %}
+                                        <th style="width: 125px">{{ rangeMonth }}</th>
+                                        <th style="width: 100px">
+                                            Invoiced
+                                            {% if userPermission.edit is defined and userPermission.edit == true %}
+                                                <br><a href="#" class="invoicedSelectAll" data-month="{{ rangeMonth }}">Select All</a>
+                                            {% endif %}
+                                        </th>
+                                        <th style="width: 100px">
+                                            Paid
+                                            {% if userPermission.edit is defined and userPermission.edit == true %}
+                                                <br><a href="#" class="paidSelectAll" data-month="{{ rangeMonth }}">Select All</a>
+                                            {% endif %}
+                                        </th>
+                                    {% endfor %}
+                                {% endif %}
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if pagination is defined and pagination is not empty %}
+                                {% for billing in pagination %}
+                                    <tr data-id="{{ billing.lease.id }}" data-index="{{ loop.index0 }}">
+                                        <td>
+                                            {% if (userPermissionLease.view is defined and userPermissionLease.view == true) or (userPermissionLease.edit is defined and userPermissionLease.edit == true) %}
+                                                <a href="{{ path('lease_edit', {id:billing.lease.id}) }}">{{ billing.lease.site.number }}</a>
+                                            {% else %}
+                                                {{ billing.lease.site.number }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if (userPermissionLease.view is defined and userPermissionLease.view == true) or (userPermissionLease.edit is defined and userPermissionLease.edit == true) %}
+                                                <a href="{{ path('lease_edit', {id:billing.lease.id}) }}">{{ billing.lease.site.name }}</a>
+                                            {% else %}
+                                                {{ billing.lease.site.name }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if billing.lease.fee == 1 %}
+                                                % of Monthly Lease ({{ billing.lease.feeValue }}%)
+                                            {% elseif billing.lease.fee == 2 %}
+                                                % of Saving ({{ billing.lease.feeValue }}%)
+                                            {% else %}
+                                                Fixed Monthly (R {{ billing.lease.feeValue }})
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ currencySymbol }} {{ billing.agentSaving }}</td>
+                                        <td>{{ billing.lease.startDate|date('d M Y') }}</td>
+                                        <td>{{ billing.lease.endDate|date('d M Y') }}</td>
+                                        <td>{{ billing.lease.term }} {{ (billing.lease.term == 1) ? 'month' : 'months' }}</td>
+                                        <td>{{ billing.escalation }}%</td>
+                                        {% if billing.billingsMonth is not empty %}
+                                            {% for month, billingMonth in billing.billingsMonth %}
+                                                {% if billingMonth.agentBilling >= 0 %}
+                                                    <td>{{ currencySymbol }} {{ billingMonth.agentBilling }}</td>
+                                                    <td>
+                                                        <span class="kt-switch">
+                                                            <label>
+                                                                <input type="checkbox" name="invoiced" data-month="{{ month }}" {{ (billingMonth.invoiced is defined and billingMonth.invoiced == true) ? 'checked' : '' }}
+                                                                    {{ (userPermission.edit is defined and userPermission.edit == true ) ? '' : 'disabled' }}/>
+                                                                <span></span>
+                                                            </label>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="kt-switch">
+                                                            <label>
+                                                                <input type="checkbox" name="paid" data-month="{{ month }}" {{ (billingMonth.paid is defined and billingMonth.paid == true) ? 'checked' : '' }}
+                                                                    {{ (userPermission.edit is defined and userPermission.edit == true ) ? '' : 'disabled' }}/>
+                                                                <span></span>
+                                                            </label>
+                                                        </span>
+                                                    </td>
+                                                {% else %}
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="11" class="text-center">Records not found</td>
+                                </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="navigation mt-3">
+                        {% if pagination is defined %}
+                            {{ knp_pagination_render(pagination) }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/vendors/general/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/bootstrap-switch/dist/js/bootstrap-switch.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/custom/js/vendors/bootstrap-switch.init.js') }}" type="text/javascript"></script>
+
+    <script src="{{ asset('assets/js/pages/agent_billing.js') }}" type="text/javascript"></script>
+{% endblock %}

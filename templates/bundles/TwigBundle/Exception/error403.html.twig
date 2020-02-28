@@ -1,0 +1,8 @@
+{% extends 'bundles/TwigBundle/Exception/layout.html.twig' %}
+
+{% block content %}
+    <h1 class="kt-error-v1__number">403</h1>
+    <p class="kt-error-v1__desc">
+        Permission denied, <a href="{{ path('homepage') }}">return to the homepage</a>.
+    </p>
+{% endblock %}

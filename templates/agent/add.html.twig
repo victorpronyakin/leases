@@ -1,0 +1,229 @@
+{% extends 'agent/layout.html.twig' %}
+
+{% block title %}Add Agent{% endblock %}
+
+{% block breadcrumbs %}
+    <h3 class="kt-subheader__title">Add Agent</h3>
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('assets/vendors/general/select2/dist/css/select2.css') }}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block body %}
+    <div class="kt-container  kt-grid__item kt-grid__item--fluid">
+        <div class="kt-portlet">
+            <div class="kt-portlet__head">
+                <div class="kt-portlet__head-label">
+                    <h3 class="kt-portlet__head-title">
+                        Add Agent
+                    </h3>
+                </div>
+            </div>
+            <!--begin::Form-->
+            <form class="kt-form" action="{{ path('agent_add') }}" method="post" id="agentForm">
+                <div class="kt-portlet__body">
+                    <div class="kt-section kt-section--first">
+                        <div class="kt-section__body">
+                            <div class="form-group">
+                                <label>Site</label>
+                                <select class="form-control kt-select2" id="selectSite" name="leaseId">
+                                    <option></option>
+                                    {% for lease in leases %}
+                                        <option value="{{ lease.id }}" {{ (app.request.request.get('leaseId') == lease.id) ? 'selected' : '' }}>
+                                            {{ lease.site.number~" "~lease.site.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">This field is required.</div>
+                            </div>
+                            <div class="agent-fields" style="{{ (app.request.request.get('leaseId') is not empty) ? '' : 'display: none;' }}">
+                                <div class="form-group">
+                                    <label>Site Status</label>
+                                    <select class="form-control" name="siteStatus" id="siteStatusSelect">
+                                        <option value="">Select a Site Status</option>
+                                        {% for siteStatus in siteStatuses %}
+                                            <option value="{{ siteStatus.id }}" {{ (app.request.request.get('siteStatus') == siteStatus.id) ? 'selected' : '' }}>
+                                                {{ siteStatus.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        Status update:
+                                        <span class="font-weight-bold" id="siteStatusUpdatedSpan"></span>
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label>Allocated To</label>
+                                    <select class="form-control" name="allocated">
+                                        <option value="">Select a user</option>
+                                        {% for user in users %}
+                                            <option value="{{ user.id }}" {{ (app.request.request.get('allocated') == user.id) ? 'selected' : '' }}>
+                                                {{ user.firstName~" "~user.lastName }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                                    <div class="form-group">
+                                        <label>Agent Fee</label>
+                                        <select class="form-control" name="fee" id="feeTypeSelect">
+                                            <option value="">Select a Exprop Fee Type</option>
+                                            <option value="1" {{ (app.request.request.get('fee') == 1) ? 'selected' : '' }}>% of monthly lease</option>
+                                            <option value="2" {{ (app.request.request.get('fee') == 2) ? 'selected' : '' }}>% of saving</option>
+                                            <option value="3" {{ (app.request.request.get('fee') == 3) ? 'selected' : '' }}>Fixed Monthly Fee</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" id="feePercentage" style="{{ (app.request.request.get('fee') == 1 or app.request.request.get('fee') == 2) ? '' : 'display:none;' }}">
+                                        <label>Agent Fee %</label>
+                                        <input type="number" class="form-control" id="feePercentageInput" name="feeValue1" value="{{ app.request.request.get('feeValue1') }}" placeholder="Exprop Fee %" />
+                                    </div>
+                                    <div class="form-group" id="feeAmount" style="{{ (app.request.request.get('fee') == 3) ? '' : 'display:none;' }}">
+                                        <label>Agent Fee Amount</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                            <input type="number" class="form-control" id="feeAmountInput" name="feeValue2" value="{{ app.request.request.get('feeValue2') }}" placeholder="Exprop Fee Amount" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-12">Agent Fee Duration</label>
+                                        <div class="col-sm-6">
+                                            <div class="kt-checkbox-inline">
+                                                <label class="kt-checkbox kt-checkbox--bold kt-checkbox--brand">
+                                                    <input type="checkbox" id="feeDurationCheckbox" name="feeDurationCheckbox" {{ (app.request.request.get('feeDurationCheckbox') == "all") ? 'checked' : '' }} value="all">
+                                                    Duration of the lease agreement
+                                                    <span></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <input type="number" id="feeDurationInput" {{ (app.request.request.get('feeDurationCheckbox') == "all") ? 'disabled' : '' }} class="form-control" name="feeDuration" value="{{ app.request.request.get('feeDuration') }}" placeholder="Enter number of months" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Agent Fee Escalation</label>
+                                        <select name="feeEscalation" class="form-control">
+                                            <option value="">Select Agent Fee Escalation</option>
+                                            <option value="1" {{ (app.request.request.get('feeEscalation') == 1) ? 'selected' : '' }}>No Escalation</option>
+                                            <option value="2" {{ (app.request.request.get('feeEscalation') == 2) ? 'selected' : '' }}>As per new lease terms</option>
+                                        </select>
+                                    </div>
+                                {% endif %}
+                                <div class="form-group">
+                                    <label>Proposed Lease by Landlord</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                        <input type="number" {{ (app.request.request.get('proposedLeaseManually') == "on") ? '' : 'readonly' }}  class="form-control" id="proposedLeaseInput" name="proposedLease" value="{{ app.request.request.get('proposedLease') }}" placeholder="Proposed Lease by Landlord" />
+                                    </div>
+                                    <div class="mt-2">
+                                        <div class="kt-checkbox-inline">
+                                            <label class="kt-checkbox kt-checkbox--bold kt-checkbox--brand">
+                                                <input type="checkbox" id="proposedLeaseCheckbox" name="proposedLeaseManually" {{ (app.request.request.get('proposedLeaseManually') == "on") ? 'checked' : '' }} value="on">
+                                                Edit Manually
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Target Renewal Rental</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                        <input type="number" class="form-control" name="targetRenewalRental" value="{{ app.request.request.get('targetRenewalRental') }}" placeholder="Target Renewal Rental" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Target Renewal Escalation %</label>
+                                    <input type="number" class="form-control" id="targetRenewalEscalationInput" name="targetRenewalEscalation" value="{{ app.request.request.get('targetRenewalEscalation') }}" placeholder="Target Renewal Escalation" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Agent Saving</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                        <input type="number" class="form-control" id="savingAmountInput" readonly name="savingAmount" value="{{ app.request.request.get('savingAmount') }}" placeholder="Agent Saving" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Agent Saving %</label>
+                                    <input type="number" class="form-control" id="savingPercentageInput" readonly name="savingPercentage" value="{{ app.request.request.get('savingPercentage') }}" placeholder="Agent Saving %" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Agent Billing</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                        <input type="number" class="form-control" id="billingValueInput" readonly name="billingValue" value="{{ app.request.request.get('billingValue') }}" placeholder="Agent Billing" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Escalation Saving %</label>
+                                    <input type="text" class="form-control" id="escalationSavingInput" readonly name="escalationSaving" value="{{ app.request.request.get('escalationSaving') }}%" placeholder="Escalation Saving" />
+                                </div>
+                                <div class="kt-heading kt-heading--sm">Notes</div>
+                                <div class="notes-items">
+                                    {% for note in app.request.request.get('notes') %}
+                                        <div class="notes-item">
+                                            <input type="hidden" name="notes[{{ loop.index }}][id]" value="{{ note.id }}">
+                                            <div class="form-group">
+                                                <textarea class="form-control" name="notes[{{ loop.index }}][text]" placeholder="Type notes...">{{ note.text }}</textarea>
+                                            </div>
+                                            <div class="col-12 text-right">
+                                                <button type="button" class="btn btn-danger btn-sm removeNotes">Remove Notes</button>
+                                            </div>
+                                            <hr>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-12 text-center">
+                                    <button type="button" class="btn btn-success btn-sm" id="btnAddNotes">Add Notes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="kt-portlet__foot">
+                    <div class="kt-form__actions text-right">
+                        <button name="submit" type="submit" class="btn btn-success">Add</button>
+                    </div>
+                </div>
+            </form>
+            <!--end::Form-->
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/vendors/general/select2/dist/js/select2.full.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/jquery-form/dist/jquery.form.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/jquery-validation/dist/jquery.validate.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/custom/js/vendors/jquery-validation.init.js') }}" type="text/javascript"></script>
+
+    <script>
+        var leaseData = [];
+        {% for lease in leases %}
+            var notes = [];
+            {% for note in lease.notes %}
+                notes.push({
+                    'id' : '{{ note.id }}',
+                    'text' : '{{ note.text }}',
+                    'updated' : '{{ note.updated|date('d M Y H:i') }}',
+                });
+            {% endfor %}
+            leaseData.push({
+                'leaseId' : '{{ lease.id }}',
+                'siteStatusId' : '{{ lease.site.siteStatus.id }}',
+                'siteStatusUpdated' : '{{ lease.site.siteStatusUpdated|date('d M Y H:i') }}',
+                'notes' : notes,
+                'currentTotalCost' : '{{ lease.currentTotalCost }}',
+                'proposedLease' : '{{ lease.proposedLease }}',
+                'percentage' : '{{ lease.percentage }}',
+                'escalationSaving' : '{{ lease.escalationSaving }}',
+            });
+        {% endfor %}
+
+        var notesIndex = {{ app.request.request.get('notes')|length }};
+    </script>
+
+    <script src="{{ asset('assets/js/pages/agent_add.js') }}" type="text/javascript"></script>
+{% endblock %}

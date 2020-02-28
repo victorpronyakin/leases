@@ -1,0 +1,13 @@
+Dear {{ (firstName is defined) ? firstName : '' }}
+<br><br>
+{% block content %}{% endblock %}
+
+{% if notInfo is not defined or notInfo != false %}
+    <br><br>
+    If you have any questions about your account or any other matter, please feel free to contact us at <a href="mailto:info@colease.io">info@colease.io</a>
+{% endif %}
+
+<br><br>
+Best regards,
+<br>
+The COLEASE Team

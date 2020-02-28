@@ -1,0 +1,12 @@
+{% extends 'bundles/TwigBundle/Exception/layout.html.twig' %}
+
+{% block content %}
+    <h1 class="kt-error-v1__number">404</h1>
+    <p class="kt-error-v1__desc">
+        The requested page couldn't be located.
+        <br>
+        Checkout for any URL misspelling
+        <br>
+        or <a href="{{ path('homepage') }}">return to the homepage</a>.
+    </p>
+{% endblock %}

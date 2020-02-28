@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{#{% block menu2_mobile %}#}
+{#    <button class="kt-header-mobile__toolbar-toggler kt-header-mobile__toolbar-toggler--left" id="kt_aside_mobile_toggler">#}
+{#        <span></span>#}
+{#    </button>#}
+{#{% endblock %}#}
+
+{#{% block menu_2 %}#}
+{#    <button class="kt-aside-close " id="kt_aside_close_btn"><i class="la la-close"></i></button>#}
+{#    <div class="kt-aside  kt-aside--skin-light kt-aside--fixed  kt-grid__item kt-grid kt-grid--desktop kt-grid--hor-desktop"#}
+{#         id="kt_aside">#}
+{#        <div class="kt-aside-menu-wrapper kt-grid__item kt-grid__item--fluid"#}
+{#             id="kt_aside_menu_wrapper">#}
+{#            <div id="kt_aside_menu" class="kt-aside-menu kt-aside-menu--skin-light" data-ktmenu-vertical="1" data-ktmenu-scroll="1">#}
+{#                {% if active_menu2 is defined %}#}
+{#                    {% set menuItem = knp_menu_get('siteAndLease', [], {'active_menu2': active_menu2}) %}#}
+{#                {% else %}#}
+{#                    {% set menuItem = knp_menu_get('siteAndLease') %}#}
+{#                {% endif %}#}
+{#                {{ knp_menu_render(menuItem) }}#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#{% endblock %}#}
+
+
+{% block menu2_mobile_new %}
+    <button class="kt-header-mobile__toolbar-toggler kt-header-mobile__toolbar-toggler--left" id="kt_header_mobile_toggler2">
+        <span></span>
+    </button>
+{% endblock %}
+
+{% block menu_2_new %}
+    <div class="kt-header__bottom" style="margin-top: 1px;">
+        <div class="kt-container ">
+            <!-- begin: Header Menu -->
+            <button class="kt-header-menu-wrapper-close" id="kt_header_menu_mobile_close_btn2">
+                <i class="la la-close"></i>
+            </button>
+            <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper2">
+                <div id="kt_header_menu2" class="kt-header-menu kt-header-menu-mobile">
+                    {% if active_menu2 is defined %}
+                        {% set menuItem = knp_menu_get('siteAndLease', [], {'active_menu2': active_menu2}) %}
+                    {% else %}
+                        {% set menuItem = knp_menu_get('siteAndLease') %}
+                    {% endif %}
+                    {{ knp_menu_render(menuItem) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

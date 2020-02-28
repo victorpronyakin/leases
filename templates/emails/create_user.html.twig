@@ -1,0 +1,12 @@
+{% extends 'emails/template.html.twig' %}
+
+{% block content %}
+    You are now COLEASE.
+    <br><br>
+    To log in when visiting the CoLease platform, just click <a href="{{ link }}">Login</a> found at the top of every page and enter your email address and password.
+    <br><br>
+    Login Email: {{ email }}
+    <br>
+    Login Password: {{ password }}
+{% endblock %}
+

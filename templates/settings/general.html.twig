@@ -1,0 +1,227 @@
+{% extends 'settings/layout.html.twig' %}
+
+{% block title %}General Settings{% endblock %}
+
+{% block breadcrumbs %}
+    <h3 class="kt-subheader__title">General</h3>
+{% endblock %}
+
+{% block stylesheets %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="kt-container  kt-grid__item kt-grid__item--fluid">
+        <div class="kt-portlet kt-portlet--mobile">
+            <div class="kt-portlet__head kt-portlet__head--lg">
+                <div class="kt-portlet__head-label">
+                    <h3 class="kt-portlet__head-title">General</h3>
+                </div>
+            </div>
+
+            <div class="kt-portlet__body">
+                <div class="accordion accordion-solid accordion-toggle-plus" id="accordionGeneral">
+                    <!-- CURRENCY -->
+                    <div class="card">
+                        <div class="card-header" id="heading_currency">
+                            <div class="card-title collapsed" data-toggle="collapse" data-target="#collapse_currency" aria-expanded="false" aria-controls="collapse_currency">
+                                Currency
+                            </div>
+                        </div>
+                        <div id="collapse_currency" class="collapse mt-2" aria-labelledby="heading_currency" data-parent="#accordionGeneral" style="">
+                            <div class="kt-section kt-section--first">
+                                <form class="kt-form" action="{{ path('settings_list') }}" method="post">
+                                    <div class="kt-section__body">
+                                        <div class="form-group">
+                                            <select class="form-control" name="currency">
+                                                <option value="">Select a Currency</option>
+                                                {% for currency in currencies %}
+                                                    <option value="{{ currency.code }}" {{ (currency.code == currencyValue) ? 'selected' : '' }}>{{ currency.name~' ('~currency.symbol~')' }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    {% if userPermission.edit is defined and userPermission.edit == true %}
+                                        <div class="kt-form__actions text-right">
+                                            <button name="submit_currency" type="submit" class="btn btn-success">Update</button>
+                                        </div>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- MAIN DASHBOARD -->
+                    <div class="card">
+                        <div class="card-header" id="heading_main_dashboard">
+                            <div class="card-title collapsed" data-toggle="collapse" data-target="#collapse_main_dashboard" aria-expanded="false" aria-controls="collapse_main_dashboard">
+                                Main Dashboard
+                            </div>
+                        </div>
+                        <div id="collapse_main_dashboard" class="collapse mt-2" aria-labelledby="heading_main_dashboard" data-parent="#accordionGeneral" style="">
+                            <div class="kt-section kt-section--first">
+                                <form class="kt-form" action="{{ path('settings_list') }}" method="post">
+                                    <div class="kt-section__body">
+                                        <div class="form-group mt-3">
+                                            <label>Select to show in the MAIN DASHBOARD</label>
+                                            <div class="kt-checkbox-inline mt-2" id="mainDashboardStatuses">
+                                                {% for siteStatus in siteStatuses %}
+                                                    <label class="kt-checkbox kt-checkbox--bold kt-checkbox--brand">
+                                                        <input data-id="{{ siteStatus.id }}" type="checkbox" name="mainDashboardStatus[]" value="{{ siteStatus.id }}"
+                                                            {{ siteStatus.id in mainDashboardStatus ? 'checked' : '' }}> {{ siteStatus.name }}
+                                                        <span></span>
+                                                    </label>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% if userPermission.edit is defined and userPermission.edit == true %}
+                                        <div class="kt-form__actions text-right">
+                                            <button name="submit_main_dashboard" type="submit" class="btn btn-success">Update</button>
+                                        </div>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- AGENT DASHBOARD -->
+                    <div class="card">
+                        <div class="card-header" id="heading_agent_dashboard">
+                            <div class="card-title collapsed" data-toggle="collapse" data-target="#collapse_agent_dashboard" aria-expanded="false" aria-controls="collapse_agent_dashboard">
+                                Agent Dashboard
+                            </div>
+                        </div>
+                        <div id="collapse_agent_dashboard" class="collapse mt-2" aria-labelledby="heading_agent_dashboard" data-parent="#accordionGeneral" style="">
+                            <div class="kt-section kt-section--first">
+                                <form class="kt-form" action="{{ path('settings_list') }}" method="post">
+                                    <div class="kt-section__body">
+                                        <div class="form-group mt-3">
+                                            <label>Select to show in the AGENT DASHBOARD</label>
+                                            <div class="kt-checkbox-inline mt-2" id="mainAgentStatuses">
+                                                {% for siteStatus in siteStatuses %}
+                                                    <label class="kt-checkbox kt-checkbox--bold kt-checkbox--brand">
+                                                        <input data-id="{{ siteStatus.id }}" type="checkbox" name="mainAgentStatus[]" value="{{ siteStatus.id }}"
+                                                                {{ siteStatus.id in mainAgentStatus ? 'checked' : '' }}> {{ siteStatus.name }}
+                                                        <span></span>
+                                                    </label>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% if userPermission.edit is defined and userPermission.edit == true %}
+                                        <div class="kt-form__actions text-right">
+                                            <button name="submit_agent_dashboard" type="submit" class="btn btn-success">Update</button>
+                                        </div>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% for generalSetting in generalSettings %}
+                        <div class="card">
+                            <div class="card-header" id="heading_{{ generalSetting.class }}">
+                                <div class="card-title collapsed" data-toggle="collapse" data-target="#collapse_{{ generalSetting.class }}" aria-expanded="false" aria-controls="collapse_{{ generalSetting.class }}">
+                                    {{ generalSetting.label }}
+                                </div>
+                            </div>
+                            <div id="collapse_{{ generalSetting.class }}" class="collapse mt-2" aria-labelledby="heading_{{ generalSetting.class }}" data-parent="#accordionGeneral">
+                                <div class="kt-section">
+                                    <div class="row">
+                                        <div class="col-12 text-right">
+                                            <button type="button" class="btn btn-brand btnGeneralSettingAdd" data-type="{{ generalSetting.class }}">
+                                                <i class="la la-plus"></i>
+                                                {{ generalSetting.add }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive" >
+                                        <table class="table" id="table{{ generalSetting.class }}" data-edit="{{ generalSetting.edit }}">
+                                            <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for item in generalSetting.items %}
+                                                <tr data-id="{{ item.id }}" data-type="{{ generalSetting.class }}">
+                                                    <td class="tableItemName">{{ item.name }}</td>
+                                                    <td class="text-right">
+                                                        {% if userPermission.edit is defined and userPermission.edit == true %}
+                                                            <a href="#" class="btn btn-clean btn-icon btnGeneralSettingEdit">
+                                                                <i class="la la-edit"></i>
+                                                            </a>
+                                                            <a href="#" class="btn btn-clean btn-icon btnGeneralSettingRemove">
+                                                                <i class="text-danger la la-trash"></i>
+                                                            </a>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade show" id="addModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAddTitle"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <form id="modalAddForm" method="post" action="{{ path('settings_general_item_add') }}">
+                    <input type="hidden" name="type" value="" id="modalAddInputType">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input type="text" name="text" class="form-control" id="modalAddInputName" required placeholder="Name">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade show" id="editModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditTitle"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <form id="modalEditForm" method="post" action="{{ path('settings_general_item_edit') }}">
+                    <input type="hidden" name="id" value="" id="modalEditInputId">
+                    <input type="hidden" name="type" value="" id="modalEditInputType">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input type="text" name="text" class="form-control" id="modalEditInputName" required placeholder="Name">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Edit</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/js/pages/settings_list.js') }}" type="text/javascript"></script>
+{% endblock %}

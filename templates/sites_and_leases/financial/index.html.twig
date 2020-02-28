@@ -1,0 +1,296 @@
+{% extends 'sites_and_leases/layout.html.twig' %}
+
+{% block title %}Financial List{% endblock %}
+
+{% block breadcrumbs %}
+    <h3 class="kt-subheader__title">Financial</h3>
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('assets/vendors/general/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        .table-show .table-show__label{
+            font-weight: normal;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .table-show .table-show__select{
+            width: auto;
+        }
+
+        .invoices__item__remove{
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="kt-container  kt-grid__item kt-grid__item--fluid">
+        <div class="kt-portlet kt-portlet--mobile">
+            <div class="kt-portlet__head kt-portlet__head--lg">
+                <div class="kt-portlet__head-label">
+                    <h3 class="kt-portlet__head-title">Financial</h3>
+                </div>
+                <div class="kt-portlet__head-toolbar">
+                    <div class="kt-portlet__head-wrapper">
+                        <div class="kt-portlet__head-actions">
+                            {% if app.request.query.has('month') and app.request.query.get('month') is not empty %}
+                                <a href="{{ path('financial_list_download') }}?{{ app.request.query.all|url_encode }}" class="btn btn-brand btn-elevate btn-icon-sm">
+                                    <i class="la la-download"></i>
+                                    Download Report
+                                </a>
+                            {% else %}
+                                <button class="btn btn-brand btn-elevate btn-icon-sm" disabled>
+                                    <i class="la la-download"></i>
+                                    Download Report
+                                </button>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="kt-portlet__body">
+                <form method="get" action="{{ path('financial_list') }}" class="kt-form kt-form--label-right">
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-form-label">Select Month</label>
+                        <div class="col-lg-6">
+                            <div class="input-group date" >
+                                <input type="text" class="form-control" value="{{ app.request.query.get('month') }}" readonly name="month" placeholder="Select date" id="monthPicker"/>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">
+                                        <i class="la la-calendar-o"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                {% if app.request.query.has('month') and app.request.query.get('month') is not empty %}
+                    <div class="kt-separator kt-separator--border-dashed kt-separator--space-md"></div>
+                    <form class="kt-form kt-form--fit" id="search_form">
+                        <div class="row kt-margin-b-20">
+                            <div class="col-lg-4 kt-margin-b-10-tablet-and-mobile">
+                                <label>Site ID:</label>
+                                <input type="text" class="form-control" value="{{ app.request.query.get('number') }}" placeholder="Site ID" name="number">
+                            </div>
+                            <div class="col-lg-4 kt-margin-b-10-tablet-and-mobile">
+                                <label>Site Name:</label>
+                                <input type="text" class="form-control" value="{{ app.request.query.get('name') }}" placeholder="Site Name" name="name">
+                            </div>
+                        </div>
+                        <div class="row kt-margin-b-20">
+                            <div class="col-lg-4 kt-margin-b-10-tablet-and-mobile">
+                                <label>Monthly Lease Charge Payment Status:</label>
+                                <select class="form-control" name="leasePaymentStatus">
+                                    <option value="">Payment Status</option>
+                                    {% for financialStatus in financialStatuses %}
+                                        <option value="{{ financialStatus.id }}" {{ (app.request.query.get('leasePaymentStatus') == financialStatus.id) ? 'selected' : '' }}>{{ financialStatus.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-lg-4 kt-margin-b-10-tablet-and-mobile">
+                                <label>Electricity Costs Payment Status</label>
+                                <select class="form-control" name="electricityPaymentStatus">
+                                    <option value="">Payment Status</option>
+                                    {% for financialStatus in financialStatuses %}
+                                        <option value="{{ financialStatus.id }}" {{ (app.request.query.get('electricityPaymentStatus') == financialStatus.id) ? 'selected' : '' }}>{{ financialStatus.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-lg-4 kt-margin-b-10-tablet-and-mobile">
+                                <label>Other Utility Costs Payment Status:</label>
+                                <select class="form-control" name="otherCostPaymentStatus">
+                                    <option value="">Payment Status</option>
+                                    {% for financialStatus in financialStatuses %}
+                                        <option value="{{ financialStatus.id }}" {{ (app.request.query.get('otherCostPaymentStatus') == financialStatus.id) ? 'selected' : '' }}>{{ financialStatus.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 text-right">
+                                <button type="submit" class="btn btn-primary btn-brand--icon" id="search">
+                                    <span><i class="la la-search"></i> Search</span>
+                                </button>
+                                <button type="reset" class="btn btn-secondary btn-secondary--icon" id="reset">
+                                    <span><i class="la la-close"></i>Reset</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="kt-separator kt-separator--border-dashed kt-separator--space-md"></div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="table-show">
+                                <label class="table-show__label">
+                                    Show
+                                    <select class="table-show__select custom-select custom-select-sm form-control form-control-sm" id="limitItems">
+                                        <option value="10" {{ (app.request.query.get('limit') == 10) ? 'selected' : '' }}>10</option>
+                                        <option value="25" {{ (app.request.query.get('limit') == 25 or app.request.query.get('limit') is empty) ? 'selected' : '' }}>25</option>
+                                        <option value="50" {{ (app.request.query.get('limit') == 50) ? 'selected' : '' }}>50</option>
+                                        <option value="100" {{ (app.request.query.get('limit') == 100) ? 'selected' : '' }}>100</option>
+                                    </select>
+                                    entries
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" style="width: 2080px">
+                            <thead>
+                                <tr>
+                                    <th style="width: 100px">Site ID</th>
+                                    <th style="width: 100px">Site Name</th>
+                                    <th style="width: 240px">Total Monthly Lease Expense</th>
+                                    <th style="width: 240px">Monthly Charge (as per Invoice)</th>
+                                    <th style="width: 200px">Payment Status</th>
+                                    <th style="width: 200px">Electricity Costs</th>
+                                    <th style="width: 200px">Payment Status</th>
+                                    <th style="width: 200px">Other Utility Costs</th>
+                                    <th style="width: 200px">Payment Status</th>
+                                    <th style="width: 200px">Total Cost</th>
+                                    <th style="width: 200px">Invoices</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if pagination is defined and pagination is not empty %}
+                                    {% for finance in pagination %}
+                                        <tr data-id="{{ finance.lease.id }}" data-index="{{ loop.index0 }}">
+                                            <td>{{ finance.lease.site.number }}</td>
+                                            <td>{{ finance.lease.site.name }}</td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                    <input type="text" name="leaseExpense" class="form-control financialField" value="{{ finance.leaseExpense }}"
+                                                           placeholder="NaN" {{ (userPermission.edit is defined and  userPermission.edit == true) ? '' : 'disabled' }}>
+                                                </div>
+                                                {% if finance.leaseRentalCost is defined and finance.leaseRentalCost is not empty %}
+                                                    <div class="mt-3">
+                                                        {% for rentalCost in finance.leaseRentalCost %}
+                                                            <div>{{ rentalCost.category.name }}: {{ currencySymbol }} {{ rentalCost.amount }}</div>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                    <input type="number" name="leaseCharge" class="form-control financialField" value="{{ finance.leaseCharge }}"
+                                                           placeholder="NaN" {{ (userPermission.edit is defined and  userPermission.edit == true) ? '' : 'disabled' }}>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <select class="form-control financialField" name="leasePaymentStatus"
+                                                        {{ (userPermission.edit is defined and  userPermission.edit == true) ? '' : 'disabled' }}>
+                                                    <option value="">Payment Status</option>
+                                                    {% for financialStatus in financialStatuses %}
+                                                        <option value="{{ financialStatus.id }}" {{ (finance.leasePaymentStatus.id is defined and finance.leasePaymentStatus.id == financialStatus.id) ? 'selected' : '' }}>{{ financialStatus.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <div class="electricity-costs-item">
+                                                    {{ finance.lease.electricityType.name }}
+                                                </div>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                    <input type="number" name="electricityCost" class="form-control financialField" value="{{ finance.electricityCost }}"
+                                                           placeholder="NaN" {{ (userPermission.edit is defined and  userPermission.edit == true) ? '' : 'disabled' }}>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <select class="form-control financialField" name="electricityPaymentStatus"
+                                                        {{ (userPermission.edit is defined and  userPermission.edit == true) ? '' : 'disabled' }}>
+                                                    <option value="">Payment Status</option>
+                                                    {% for financialStatus in financialStatuses %}
+                                                        <option value="{{ financialStatus.id }}" {{ (finance.electricityPaymentStatus.id is defined and finance.electricityPaymentStatus.id == financialStatus.id) ? 'selected' : '' }}>{{ financialStatus.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label>Total:</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                        <input type="number" class="form-control financialField" name="otherCost" value="{{ finance.otherCost }}"
+                                                               placeholder="NaN" {{ (userPermission.edit is defined and  userPermission.edit == true) ? '' : 'disabled' }}>
+                                                    </div>
+                                                </div>
+                                                {% if finance.lease.otherUtilityCost is not empty %}
+                                                    <div class="otherUtilityCostsDiv">
+                                                        {% for otherCost in finance.lease.otherUtilityCost %}
+                                                            <div class="form-group">
+                                                                {% set fieldName = 'otherCost'~otherCost.name %}
+                                                                <label>{{ otherCost.name }}:</label>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                                    <input type="number" class="form-control financialField otherCostFields" name="{{ fieldName }}"
+                                                                           value="{{ finance[fieldName] }}" placeholder="0"
+                                                                            {{ (userPermission.edit is defined and  userPermission.edit == true) ? '' : 'disabled' }}>
+                                                                </div>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <select class="form-control financialField" name="otherCostPaymentStatus"
+                                                        {{ (userPermission.edit is defined and  userPermission.edit == true) ? '' : 'disabled' }}>
+                                                    <option value="">Payment Status</option>
+                                                    {% for financialStatus in financialStatuses %}
+                                                        <option value="{{ financialStatus.id }}" {{ (finance.otherCostPaymentStatus.id is defined and finance.otherCostPaymentStatus.id == financialStatus.id) ? 'selected' : '' }}>{{ financialStatus.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                    <input type="number" class="form-control financialField" name="total" value="{{ finance.total }}" placeholder="NaN"
+                                                            {{ (userPermission.edit is defined and  userPermission.edit == true) ? '' : 'disabled' }}>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="invoices">
+                                                    {% if(finance.invoices is not empty) %}
+                                                        {% for invoice in finance.invoices %}
+                                                            <div class="invoices__item" data-url="{{ invoice.url }}">
+                                                                <a href="{{ invoice.url }}" target="_blank">{{ invoice.name }}</a>
+                                                                {% if userPermission.edit is defined and  userPermission.edit == true %}
+                                                                    <span class="invoices__item__remove"><i class="fa fa-times text-danger"></i></span>
+                                                                {% endif %}
+                                                            </div>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </div>
+                                                {% if userPermission.edit is defined and  userPermission.edit == true %}
+                                                    <div class="invoices-uploader text-right">
+                                                        <input type="file" name="invoices[]" class="invoices-uploader__input" style="display: none;">
+                                                        <button class="btn btn-sm btn-info invoices-uploader__button" style="width: 100%;">Upload</button>
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="11" class="text-center">Records not found</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="navigation mt-3">
+                        {{ knp_pagination_render(pagination) }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/vendors/general/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
+
+    <script src="{{ asset('assets/js/pages/financial_list.js') }}" type="text/javascript"></script>
+{% endblock %}

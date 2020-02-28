@@ -1,0 +1,12 @@
+{% extends 'emails/template.html.twig' %}
+
+{% block content %}
+    This email is a reminder that there is an outstanding issue relating to {{ siteNumber }} - {{ siteName }} as follows:
+    <br><br>
+    Issue Type: {{ issue.type.name }}<br>
+    Issue Details: {{ issue.details }}<br>
+    Date Logged: {{ issue.logged|date('d M Y') }}<br>
+    <br><br>
+    If the issue has been sorted, please <a href="{{ link }}">login</a> to the COLEASE PLATFORM and mark the issue as CLOSED.
+{% endblock %}
+

@@ -1,0 +1,157 @@
+{% extends 'settings/layout.html.twig' %}
+
+{% block title %}Add User{% endblock %}
+
+{% block breadcrumbs %}
+    <h3 class="kt-subheader__title">Add User</h3>
+{% endblock %}
+
+{% block body %}
+    <div class="kt-container  kt-grid__item kt-grid__item--fluid">
+        <div class="kt-portlet">
+            <div class="kt-portlet__head">
+                <div class="kt-portlet__head-label">
+                    <h3 class="kt-portlet__head-title">
+                        Add User
+                    </h3>
+                </div>
+            </div>
+            <!--begin::Form-->
+            {{ form_start(formUser, {'attr': {'class': 'kt-form', 'id':'userForm'}}) }}
+                <div class="kt-portlet__body">
+                    <div class="kt-section kt-section--first">
+                        <h3 class="kt-section__title">Basic Info:</h3>
+                        <div class="kt-section__body">
+                            <div class="form-group">
+                                <label>Role</label>
+                                <select name="role" class="form-control">
+                                    <option value="">Select a User Role</option>
+                                    <option value="ROLE_SUPER_ADMIN" {{ role == 'ROLE_SUPER_ADMIN' ? 'selected' : '' }}>Super Admin</option>
+                                    <option value="ROLE_ADMIN" {{ role == 'ROLE_SUPER_ADMIN' ? 'selected' : '' }}>Admin</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(formUser.type) }}
+                                {{ form_widget(formUser.type, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(formUser.firstName, "Name") }}
+                                {{ form_widget(formUser.firstName, {'attr': {'class': 'form-control', 'placeholder': 'Name'}}) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(formUser.lastName, "Surname") }}
+                                {{ form_widget(formUser.lastName, {'attr': {'class': 'form-control', 'placeholder': 'Surname'}}) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(formUser.email) }}
+                                {{ form_widget(formUser.email, {'attr': {'class': 'form-control', 'placeholder': 'Email'}}) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(formUser.phone, "Cell") }}
+                                {{ form_widget(formUser.phone, {'attr': {'class': 'form-control', 'placeholder': 'Cell'}}) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(formUser.company) }}
+                                {{ form_widget(formUser.company, {'attr': {'class': 'form-control', 'placeholder': 'Company'}}) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(formUser.designation) }}
+                                {{ form_widget(formUser.designation, {'attr': {'class': 'form-control', 'placeholder': 'Designation'}}) }}
+                            </div>
+                        </div>
+                        <h3 class="kt-section__title">Permissions:</h3>
+                        <div class="kt-section__body">
+                            <div class="form-group row mb-0">
+                                <label class="col-6 col-md-3 col-form-label font-weight-bold">Select All</label>
+                                <div class="col-6 col-md-3">
+                                <span class="kt-switch">
+                                    <label>
+                                        <input type="checkbox" id="permissionSelectAll" name="permissionSelectAll">
+                                        <span></span>
+                                    </label>
+                                </span>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                    <th>Name</th>
+                                    <th>View</th>
+                                    <th>Add</th>
+                                    <th>Edit</th>
+                                    <th>Remove</th>
+                                    </thead>
+                                    <tbody>
+                                    {% for permission in permissions %}
+                                        <tr>
+                                            <td>{{ permission.name }}</td>
+                                            <td>
+                                                {% if permission.viewable == true %}
+                                                    <span class="kt-switch">
+                                                        <label>
+                                                            <input type="checkbox" class="permissionCheckbox" name="permissions[{{ permission.id }}][view]" value="true"
+                                                                    {{ (userPermissions[permission.id]['view'] is defined and userPermissions[permission.id]['view'] == true) ? 'checked="true"' : '' }}>
+                                                            <span></span>
+                                                        </label>
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if permission.added == true %}
+                                                    <span class="kt-switch">
+                                                        <label>
+                                                            <input type="checkbox" class="permissionCheckbox" name="permissions[{{ permission.id }}][add]" value="true"
+                                                                    {{ (userPermissions[permission.id]['add'] is defined and userPermissions[permission.id]['add'] == true) ? 'checked="true"' : '' }}>
+                                                            <span></span>
+                                                        </label>
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if permission.editable == true %}
+                                                    <span class="kt-switch">
+                                                        <label>
+                                                            <input type="checkbox" class="permissionCheckbox" name="permissions[{{ permission.id }}][edit]" value="true"
+                                                                    {{ (userPermissions[permission.id]['edit'] is defined and userPermissions[permission.id]['edit'] == true) ? 'checked="true"' : '' }}>
+                                                            <span></span>
+                                                        </label>
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if permission.removable == true %}
+                                                    <span class="kt-switch">
+                                                        <label>
+                                                            <input type="checkbox" class="permissionCheckbox" name="permissions[{{ permission.id }}][remove]" value="true"
+                                                                    {{ (userPermissions[permission.id]['remove'] is defined and userPermissions[permission.id]['remove'] == true) ? 'checked="true"' : '' }}>
+                                                            <span></span>
+                                                        </label>
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="kt-portlet__foot">
+                    <div class="kt-form__actions text-right">
+                        {{ form_row(formUser.submit, { 'label': 'Create', 'attr': {'class': 'btn btn-success'} }) }}
+                    </div>
+                </div>
+            {{ form_end(formUser) }}
+            <!--end::Form-->
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/vendors/general/jquery-form/dist/jquery.form.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/jquery-validation/dist/jquery.validate.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/custom/js/vendors/jquery-validation.init.js') }}" type="text/javascript"></script>
+
+    <script src="{{ asset('assets/js/pages/user_add.js') }}" type="text/javascript"></script>
+{% endblock %}

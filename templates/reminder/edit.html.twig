@@ -1,0 +1,259 @@
+{% extends 'settings/layout.html.twig' %}
+
+{% block title %}Edit Reminder{% endblock %}
+
+{% block breadcrumbs %}
+    <h3 class="kt-subheader__title">Edit Reminder</h3>
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('assets/vendors/general/select2/dist/css/select2.css') }}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block body %}
+    <div class="kt-container  kt-grid__item kt-grid__item--fluid">
+        <div class="kt-portlet">
+            <div class="kt-portlet__head">
+                <div class="kt-portlet__head-label">
+                    <h3 class="kt-portlet__head-title">
+                        Edit Reminder
+                    </h3>
+                </div>
+            </div>
+            <!--begin::Form-->
+            <form class="kt-form" action="{{ path('reminders_edit', {id:reminder.id}) }}" method="post" id="reminderForm">
+                <div class="kt-portlet__body">
+                    <div class="kt-section kt-section--first">
+                        <div class="kt-section__body">
+                            <div class="form-group">
+                                <label>Reminder Type</label>
+                                <select class="form-control" name="type" id="reminderTypeSelect">
+                                    <option value="">Select a Reminder Type</option>
+                                    <option value="1" {{ (reminder.type == 1) ? 'selected' : '' }}>Lease Expiry</option>
+                                    <option value="2" {{ (reminder.type == 2) ? 'selected' : '' }}>Lease Renewal Option</option>
+                                    <option value="3" {{ (reminder.type == 3) ? 'selected' : '' }}>Lease Escalation</option>
+                                    <option value="4" {{ (reminder.type == 4) ? 'selected' : '' }}>Issue</option>
+                                    <option value="5" {{ (reminder.type == 5) ? 'selected' : '' }}>Missing Supporting Documents (LANDLORD)</option>
+                                    <option value="6" {{ (reminder.type == 6) ? 'selected' : '' }}>Missing Supporting Documents (LEASE)</option>
+                                    <option value="7" {{ (reminder.type == 7) ? 'selected' : '' }}>Site Status</option>
+                                    <option value="8" {{ (reminder.type == 8) ? 'selected' : '' }}>Financial</option>
+                                </select>
+                            </div>
+                            <!-- Start Questions -->
+                            <div class="form-group questionDiv questionDiv1" style="{{ (reminder.type == 1) ? '' : 'display: none;' }}">
+                                <label>How many days before lease expiry?</label>
+                                <input type="number" name="detail[leaseExpiry]" value="{{ reminder.detail.leaseExpiry is defined ? reminder.detail.leaseExpiry : '' }}"
+                                       class="form-control" placeholder="How many days before lease expiry?">
+                            </div>
+                            <div class="form-group questionDiv questionDiv2" style="{{ (reminder.type == 2) ? '' : 'display: none;' }}">
+                                <label>How many days before lease option expires?</label>
+                                <input type="number" name="detail[leaseRenewal]" value="{{ reminder.detail.leaseRenewal is defined ? reminder.detail.leaseRenewal : '' }}"
+                                       class="form-control" placeholder="How many days before lease option expires?">
+                            </div>
+                            <div class="form-group questionDiv questionDiv3" style="{{ (reminder.type == 3) ? '' : 'display: none;' }}">
+                                <label>How many days before Annual Lease Escalation?</label>
+                                <input type="number" name="detail[leaseEscalation]" value="{{ reminder.detail.leaseEscalation is defined ? reminder.detail.leaseEscalation : '' }}"
+                                       class="form-control" placeholder="How many days before Annual Lease Escalation?">
+                            </div>
+                            <div class="form-group row questionDiv questionDiv4" style="{{ (reminder.type == 4) ? '' : 'display: none;' }}">
+                                <label class="col-12">How many days after issue is logged?</label>
+                                <div class="col-sm-3">
+                                    <div class="kt-checkbox-inline">
+                                        <label class="kt-checkbox kt-checkbox--bold kt-checkbox--brand">
+                                            <input type="checkbox" id="issueTypeCheckbox" name="detail[issue1]" {{ (reminder.detail.issue is defined and reminder.detail.issue == "immediately") ? 'checked' : '' }} value="immediately">
+                                            Immediately
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="number" id="issueTypeInput" name="detail[issue]"
+                                           value="{{ (reminder.detail.issue is defined and reminder.detail.issue != "immediately") ? reminder.detail.issue : '' }}"
+                                            {{ (reminder.detail.issue is defined and reminder.detail.issue == "immediately") ? 'disabled' : '' }}
+                                           class="form-control" placeholder="How many days after issue is logged?">
+                                </div>
+                            </div>
+                            <div class="questionDiv questionDiv5" style="{{ (reminder.type == 5) ? '' : 'display: none;' }}">
+                                <div class="form-group">
+                                    <label>Supporting Document Status</label>
+                                    <select class="form-control" name="detail[landlordDocumentStatus]" id="landlordDocumentStatusSelect">
+                                        <option value="">Select a Supporting Document Status</option>
+                                        {% for docStatus in documentStatuses %}
+                                            {% if docStatus.name != 'Complete' %}
+                                                <option value="{{ docStatus.id }}"
+                                                        {{ (reminder.detail.landlordDocumentStatus is defined and reminder.detail.landlordDocumentStatus == docStatus.id) ? 'selected' : '' }}>
+                                                    {{ docStatus.name }}
+                                                </option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group landlordDocumentStatusDaysDiv"
+                                     style="{{ (reminder.detail.landlordDocumentStatus is defined and reminder.detail.landlordDocumentStatus is not empty) ? : 'display: none;' }}">
+                                    <label>How many days after Supporting Document Status?</label>
+                                    <input type="number" name="detail[landlordDocumentDay]" value="{{ reminder.detail.landlordDocumentDay is defined ? reminder.detail.landlordDocumentDay : '' }}"
+                                           class="form-control" placeholder="How many days after Supporting Document Status?">
+                                </div>
+                            </div>
+                            <div class="questionDiv questionDiv6" style="{{ (reminder.type == 6) ? '' : 'display: none;' }}">
+                                <div class="form-group">
+                                    <label>Supporting Document Status</label>
+                                    <select class="form-control" name="detail[leaseDocumentStatus]" id="leaseDocumentStatusSelect">
+                                        <option value="">Select a Supporting Document Status</option>
+                                        {% for docStatus in documentStatuses %}
+                                            {% if docStatus.name != 'Complete' %}
+                                                <option value="{{ docStatus.id }}"
+                                                        {{ (reminder.detail.leaseDocumentStatus is defined and reminder.detail.leaseDocumentStatus == docStatus.id) ? 'selected' : '' }}>
+                                                    {{ docStatus.name }}
+                                                </option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group leaseDocumentStatusDaysDiv"
+                                     style="{{ (reminder.detail.leaseDocumentStatus is defined and reminder.detail.leaseDocumentStatus is not empty) ? : 'display: none;' }}">
+                                    <label>How many days after Supporting Document Status?</label>
+                                    <input type="number" name="detail[leaseDocumentDay]" value="{{ reminder.detail.leaseDocumentDay is defined ? reminder.detail.leaseDocumentDay : '' }}"
+                                           class="form-control" placeholder="How many days after Supporting Document Status?">
+                                </div>
+                            </div>
+                            <div class="questionDiv questionDiv7" style="{{ (reminder.type == 7) ? '' : 'display: none;' }}">
+                                <div class="form-group">
+                                    <label>Site Status</label>
+                                    <select class="form-control" name="detail[siteStatus]" id="siteStatusSelect">
+                                        <option value="">Select a Site Status</option>
+                                        {% for siteStatus in siteStatuses %}
+                                            <option value="{{ siteStatus.id }}"
+                                                    {{ (reminder.detail.siteStatus is defined and reminder.detail.siteStatus == siteStatus.id) ? 'selected' : '' }}>
+                                                {{ siteStatus.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group siteStatusDaysDiv"
+                                    style="{{ (reminder.detail.siteStatus is defined and reminder.detail.siteStatus is not empty) ? : 'display: none;' }}">
+                                    <label>How many days after site status is changed?</label>
+                                    <input type="number" name="detail[siteDay]" value="{{ reminder.detail.siteDay is defined ? reminder.detail.siteDay : '' }}"
+                                           class="form-control" placeholder="How many days after site status is changed?">
+                                </div>
+                            </div>
+                            <div class="questionDiv questionDiv8" style="{{ (reminder.type == 8) ? '' : 'display: none;' }}">
+                                <div class="form-group">
+                                    <label>Financial Status</label>
+                                    <select class="form-control" name="detail[financialStatus]" id="financialStatusSelect">
+                                        <option value="">Select a Financial Status</option>
+                                        {% for financialStatus in financialStatuses %}
+                                            <option value="{{ financialStatus.id }}"
+                                                    {{ (reminder.detail.financialStatus is defined and reminder.detail.financialStatus == financialStatus.id) ? 'selected' : '' }}>
+                                                {{ financialStatus.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group financialStatusDaysDiv"
+                                     style="{{ (reminder.detail.financialStatus is defined and reminder.detail.financialStatus is not empty) ? : 'display: none;' }}">
+                                    <label>How many days after Financial Status Type?</label>
+                                    <input type="number" name="detail[financialDay]" value="{{ reminder.detail.financialDay is defined ? reminder.detail.financialDay : '' }}"
+                                           class="form-control" placeholder="How many days after Financial Status Type?">
+                                </div>
+                            </div>
+                            <!-- END Questions -->
+                            <!-- Start Delivery -->
+                            <div class="deliveryDiv" style="{{ (reminder.type is not empty) ? '' : 'display: none;' }}">
+                                <div class="form-group">
+                                    <label>How should reminder be delivered?</label>
+                                    <div class="col-sm-4">
+                                        <div class="kt-checkbox-inline">
+                                            <label class="kt-checkbox kt-checkbox--bold kt-checkbox--brand">
+                                                <input type="checkbox" id="dashboardCheckbox" name="dashboard" {{ (reminder.dashboard is not null and reminder.dashboard == false) ? '' : 'checked' }} value="1">
+                                                Dashboard
+                                                <span></span>
+                                            </label>
+                                            <label class="kt-checkbox kt-checkbox--bold kt-checkbox--brand">
+                                                <input type="checkbox" id="emailStatusCheckbox" name="emailStatus" {{ (reminder.emailStatus == true) ? 'checked' : '' }} value="1">
+                                                Email
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="emailsDiv col-sm-12" style="{{ (reminder.emailStatus == true) ? '' : 'display:none;' }}">
+                                        <h3 class="kt-section__title kt-section__title-sm">Emails:</h3>
+                                        <div class="form-group">
+                                            <label>Select Users</label>
+                                            <select class="form-control" name="emails[users][]" multiple id="emailUsers" style="width: 100%;">
+                                                {% for user in users %}
+                                                    <option value="{{ user.id }}">
+                                                        {{ user.firstName }} {{ user.lastName }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                            <div class="invalid-feedback">This field is required.</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Input Emails:</label>
+                                            <div class="emailsInputs">
+                                                {% if reminder.emails.emails is defined and reminder.emails.emails is not empty %}
+                                                    {% for emailAddress in reminder.emails.emails %}
+                                                        <div class="emailItem row">
+                                                            <div class="col-11">
+                                                                <input type="email" name="emails[emails][]" value="{{ emailAddress }}"
+                                                                       class="form-control mb-3" placeholder="Input Email Address">
+                                                            </div>
+                                                            <div class="col-1">
+                                                                <a href="#" class="text-danger removeEmails"><i class="la la-remove"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <div class="emailItem row">
+                                                        <div class="col-11">
+                                                            <input type="email" name="emails[emails][]" value="" class="form-control mb-3" placeholder="Input Email Address">
+                                                        </div>
+                                                        <div class="col-1">
+                                                            <a href="#" class="text-danger removeEmails"><i class="la la-remove"></i></a>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-1"></div>
+                                            <div class="col-11 text-right">
+                                                <button type="button" class="btn btn-primary btn-sm" id="addMoreEmails">Add More</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Delivery -->
+                        </div>
+                    </div>
+                </div>
+                <div class="kt-portlet__foot">
+                    <div class="kt-form__actions text-right">
+                        <button name="submit" type="submit" class="btn btn-success">Edit</button>
+                    </div>
+                </div>
+            </form>
+            <!--end::Form-->
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/vendors/general/select2/dist/js/select2.full.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/jquery-form/dist/jquery.form.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/jquery-validation/dist/jquery.validate.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/custom/js/vendors/jquery-validation.init.js') }}" type="text/javascript"></script>
+
+    <script>
+        var emailUsers = [];
+        {% if reminder.emails.users is defined and reminder.emails.users is not empty %}
+            {% for userEmail in reminder.emails.users %}
+                emailUsers.push('{{ userEmail }}');
+            {% endfor %}
+        {% endif %}
+    </script>
+
+    <script src="{{ asset('assets/js/pages/reminder_set_up.js') }}" type="text/javascript"></script>
+{% endblock %}

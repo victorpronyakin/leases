@@ -1,0 +1,710 @@
+{% extends 'sites_and_leases/layout.html.twig' %}
+
+{% block title %}Add Lease{% endblock %}
+
+{% block breadcrumbs %}
+    <h3 class="kt-subheader__title">Add Lease</h3>
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('assets/css/demo5/pages/wizard/wizard-3.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/vendors/general/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/vendors/general/select2/dist/css/select2.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/vendors/general/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        .kt-wizard-v3 .kt-wizard-v3__nav .kt-wizard-v3__nav-items .kt-wizard-v3__nav-item {
+            flex: 0 0 25%;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="kt-container  kt-grid__item kt-grid__item--fluid">
+        <div class="kt-portlet">
+            <div class="kt-portlet__body kt-portlet__body--fit">
+                <div class="kt-grid kt-wizard-v3 kt-wizard-v3--white" id="kt_wizard_v3" data-ktwizard-state="between">
+                    <div class="kt-grid__item">
+                        <!--begin: Form Wizard Nav -->
+                        <div class="kt-wizard-v3__nav">
+                            <div class="kt-wizard-v3__nav-items">
+                                <!--doc: Replace A tag with SPAN tag to disable the step link click -->
+                                <a class="kt-wizard-v3__nav-item" href="#" data-ktwizard-type="step" data-ktwizard-state="current">
+                                    <div class="kt-wizard-v3__nav-body">
+                                        <div class="kt-wizard-v3__nav-label">
+                                            <span>1</span> Details
+                                        </div>
+                                        <div class="kt-wizard-v3__nav-bar"></div>
+                                    </div>
+                                </a>
+                                <a class="kt-wizard-v3__nav-item" href="#" data-ktwizard-type="step" data-ktwizard-state="pending">
+                                    <div class="kt-wizard-v3__nav-body">
+                                        <div class="kt-wizard-v3__nav-label">
+                                            <span>2</span> Commercials
+                                        </div>
+                                        <div class="kt-wizard-v3__nav-bar"></div>
+                                    </div>
+                                </a>
+                                <a class="kt-wizard-v3__nav-item" href="#" data-ktwizard-type="step" data-ktwizard-state="pending">
+                                    <div class="kt-wizard-v3__nav-body">
+                                        <div class="kt-wizard-v3__nav-label">
+                                            <span>3</span> Documents
+                                        </div>
+                                        <div class="kt-wizard-v3__nav-bar"></div>
+                                    </div>
+                                </a>
+                                <a class="kt-wizard-v3__nav-item" href="#" data-ktwizard-type="step" data-ktwizard-state="pending">
+                                    <div class="kt-wizard-v3__nav-body">
+                                        <div class="kt-wizard-v3__nav-label">
+                                            <span>4</span> Management
+                                        </div>
+                                        <div class="kt-wizard-v3__nav-bar"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <!--end: Form Wizard Nav -->
+
+                    </div>
+                    <div class="kt-grid__item kt-grid__item--fluid kt-wizard-v3__wrapper">
+                        <!--begin: Form Wizard Form-->
+                        <form class="kt-form" id="kt_form" method="post" action="{{ path('lease_add') }}" enctype="multipart/form-data">
+                            <!--begin: Form Wizard Step 1-->
+                            <div class="kt-wizard-v3__content" data-ktwizard-type="step-content" data-ktwizard-state="current">
+                                <div class="kt-heading kt-heading--md">Details</div>
+                                <div class="kt-form__section kt-form__section--first">
+                                    <div class="kt-wizard-v3__form">
+                                        <div class="form-group">
+                                            <label>Landlord</label>
+                                            <select name="lease[landlord]" id="kt_select2__landlord" class="form-control kt-select2" style="width: 100%;">
+                                                <option></option>
+                                                {% for landlord in landlords %}
+                                                    <option value="{{ landlord.id }}" {{ (lease.landlord is defined and lease.landlord.id is defined and lease.landlord.id == landlord.id) ? 'selected' : '' }}>{{ landlord.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <a href="{{ path('landlord_add') }}" class="pull-right">Add Landlord</a>
+                                            <div class="invalid-feedback">This field is required.</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Site Location</label>
+                                            <select name="lease[site]" id="kt_select2__site" class="form-control kt-select2" style="width: 100%;">
+                                                <option></option>
+                                                {% for site in sites %}
+                                                    <option value="{{ site.id }}" {{ (lease.site is defined and lease.site.id is defined and lease.site.id == site.id) ? 'selected' : '' }}>{{ site.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <a href="{{ path('site_add') }}" class="pull-right">Add Site</a>
+                                            <div class="invalid-feedback">This field is required.</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Lease Type</label>
+                                            <select name="lease[type][]" multiple id="kt_select2__type" class="form-control kt-select2" style="width: 100%;">
+                                                <option></option>
+                                                {% for leaseType in leaseTypes %}
+                                                    <option value="{{ leaseType.id }}">{{ leaseType.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <div class="invalid-feedback">This field is required.</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>SQM of Leased premises</label>
+                                            <input type="text" class="form-control" name="lease[sqm]" placeholder="SQM of Leased premises" value="{{ lease.sqm }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Commencement Date</label>
+                                            <div class="input-group date">
+                                                <input type="text" class="form-control" name="lease[startDate]"  id="lease_startDate"  value="{{ (lease.startDate is defined and lease.startDate is not empty) ? lease.startDate|date('d M Y') : '' }}" readonly placeholder="Select date"/>
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">
+                                                        <i class="la la-calendar-o"></i>
+                                                    </span>
+                                                </div>
+                                                <div class="invalid-feedback">This field is required.</div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Expiry Date</label>
+                                            <div class="input-group date" >
+                                                <input type="text" class="form-control" name="lease[endDate]"  id="lease_endDate"  value="{{ (lease.endDate is defined and lease.endDate is not empty) ? lease.endDate|date('d M Y') : '' }}" readonly placeholder="Select date"/>
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">
+                                                        <i class="la la-calendar-o"></i>
+                                                    </span>
+                                                </div>
+                                                <div id="endDate-error" class="invalid-feedback">Must be greater than Commencement Date.</div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Lease Term</label>
+                                            <input type="number" class="form-control" readonly name="lease[term]" placeholder="Number of months" value="{{ lease.term }}">
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-6 col-form-label">Renewal Option in lease</label>
+                                            <div class="col-sm-6">
+                                                <span class="kt-switch">
+                                                    <label>
+                                                        <input type="checkbox" name="lease[renewalStatus]" id="leaseRenewalStatus" {{ (lease.renewalStatus is defined and lease.renewalStatus == true) ? 'checked' : '' }}/>
+                                                        <span></span>
+                                                    </label>
+                                                </span>
+                                            </div>
+                                            <div class="col-sm-12" id="leaseRenewalOptional" style="{{ (lease.renewalStatus is defined and lease.renewalStatus == true) ? '' : 'display: none;' }}">
+                                                <select name="lease[renewal]" class="form-control" id="leaseRenewal">
+                                                    <option value="">Select number of days</option>
+                                                    <option value="30" {{ (lease.renewal is defined and lease.renewal == 30) ? 'selected' : '' }}>30 days</option>
+                                                    <option value="60" {{ (lease.renewal is defined and lease.renewal == 60) ? 'selected' : '' }}>60 days</option>
+                                                    <option value="90" {{ (lease.renewal is defined and lease.renewal == 90) ? 'selected' : '' }}>90 days</option>
+                                                    <option value="180" {{ (lease.renewal is defined and lease.renewal == 180) ? 'selected' : '' }}>180 days</option>
+                                                    <option value="360" {{ (lease.renewal is defined and lease.renewal == 360) ? 'selected' : '' }}>360 days</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-6 col-form-label">Termination Clause in lease</label>
+                                            <div class="col-sm-6">
+                                                <span class="kt-switch">
+                                                    <label>
+                                                        <input type="checkbox" name="lease[terminationClauseStatus]" id="leaseTerminationClauseStatus" {{ (lease.terminationClauseStatus is defined and lease.terminationClauseStatus == true) ? 'checked' : '' }}/>
+                                                        <span></span>
+                                                    </label>
+                                                </span>
+                                            </div>
+                                            <div class="col-sm-12" id="terminationClauseOptional" style="{{ (lease.terminationClauseStatus is defined and lease.terminationClauseStatus == true) ? '' : 'display: none;' }}">
+                                                <select name="lease[terminationClause]" id="leaseTerminationClause" class="form-control">
+                                                    <option value="">Select number of days</option>
+                                                    <option value="30" {{ (lease.terminationClause is defined and lease.terminationClause == 30) ? 'selected' : '' }}>30 days</option>
+                                                    <option value="60" {{ (lease.terminationClause is defined and lease.terminationClause == 60) ? 'selected' : '' }}>60 days</option>
+                                                    <option value="90" {{ (lease.terminationClause is defined and lease.terminationClause == 90) ? 'selected' : '' }}>90 days</option>
+                                                    <option value="180" {{ (lease.terminationClause is defined and lease.terminationClause == 180) ? 'selected' : '' }}>180 days</option>
+                                                    <option value="360" {{ (lease.terminationClause is defined and lease.terminationClause == 360) ? 'selected' : '' }}>360 days</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="kt-heading kt-heading--md">Notes</div>
+                                <div class="kt-form__section kt-form__section--last">
+                                    <div class="kt-wizard-v3__form">
+                                        <div class="kt-section__body">
+                                            <div class="notes-items">
+                                                {% for note in leaseNotes %}
+                                                    <div class="notes-item mb-3">
+                                                        <input type="hidden" name="notes[{{ loop.index }}][id]" value="{{ note.id }}">
+                                                        <div class="form-group mb-2">
+                                                            <textarea class="form-control" name="notes[{{ loop.index }}][text]" placeholder="Type notes...">{{ note.text }}</textarea>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <label class="btn-label">
+                                                                    Date of note:
+                                                                    <span class="font-weight-bold">{{ note.updated|date('d M Y H:i') }}</span>
+                                                                </label>
+                                                            </div>
+                                                            <div class="col-sm-6 text-right">
+                                                                <button type="button" class="btn btn-danger btn-sm removeNotes">Remove Notes</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                            <div class="col-12 text-center">
+                                                <button type="button" class="btn btn-success btn-sm" id="btnAddNotes">Add Notes</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end: Form Wizard Step 1-->
+
+                            <!--begin: Form Wizard Step 2-->
+                            <div class="kt-wizard-v3__content" data-ktwizard-type="step-content">
+                                <div class="kt-heading kt-heading--md">Lease Commercials</div>
+                                <div class="kt-form__section kt-form__section--first">
+                                    <div class="kt-wizard-v3__form" id="leaseCommercialForms">
+                                        {% if rentalCosts is defined and rentalCosts is not empty %}
+                                            {% for rentalCost in rentalCosts %}
+                                                <div class="lease-commercial-item">
+                                                    <input type="hidden" value="{{ rentalCost.id }}" name="leaseRentalCost[{{ loop.index }}][id]">
+                                                    <div class="form-group">
+                                                        <label>Monthly Rental Costs</label>
+                                                        <select name="leaseRentalCost[{{ loop.index }}][category]" id="kt_select2_leaseRentalCost_category_{{ loop.index }}" class="form-control kt-select2 rentalCategory" style="width: 100%;">
+                                                            <option></option>
+                                                            {% for rentalCostCategory in rentalCostCategories %}
+                                                                <option value="{{ rentalCostCategory.id }}" {{ (rentalCost.category is defined and rentalCost.category.id is defined and rentalCost.category.id == rentalCostCategory.id) ? 'selected' : '' }}>{{ rentalCostCategory.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <div class="invalid-feedback">This field is required.</div>
+                                                    </div>
+                                                    <div class="form-group rentalAmountDiv">
+                                                        <label>Rental Amount</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                            <input type="number" class="form-control leaseRentalCostAmount" name="leaseRentalCost[{{ loop.index }}][amount]" placeholder="Rental Amount" value="{{ rentalCost.amount }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group rentalDateDiv">
+                                                        <label>Rental Cost Starting Date</label>
+                                                        <div class="input-group date" >
+                                                            <input type="text" class="form-control rentalDateInput" name="leaseRentalCost[{{ loop.index }}][startDate]"  id="leaseRentalCost_startDate_{{ loop.index }}"  value="{{ (rentalCost.startDate is defined and rentalCost.startDate is not empty) ? rentalCost.startDate|date('d M Y') : '' }}" readonly placeholder="Select date"/>
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">
+                                                                    <i class="la la-calendar-o"></i>
+                                                                </span>
+                                                            </div>
+                                                            <div class="invalid-feedback">This field is required.</div>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="lease-commercial-item">
+                                                <input type="hidden" value="" name="leaseRentalCost[0][id]">
+                                                <div class="form-group">
+                                                    <label>Monthly Rental Costs</label>
+                                                    <select name="leaseRentalCost[0][category]" id="kt_select2_leaseRentalCost_category_0" class="form-control kt-select2 rentalCategory" style="width: 100%;">
+                                                        <option></option>
+                                                        {% for rentalCostCategory in rentalCostCategories %}
+                                                            <option value="{{ rentalCostCategory.id }}">{{ rentalCostCategory.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <div class="invalid-feedback">This field is required.</div>
+                                                </div>
+                                                <div class="form-group rentalAmountDiv" style="display: none;">
+                                                    <label>Rental Amount</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                        <input type="number" class="form-control leaseRentalCostAmount" name="leaseRentalCost[0][amount]" placeholder="Rental Amount" value="">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group rentalDateDiv" style="display: none;">
+                                                    <label>Rental Cost Starting Date</label>
+                                                    <div class="input-group date">
+                                                        <input type="text" class="form-control rentalDateInput" name="leaseRentalCost[0][startDate]"  id="leaseRentalCost_startDate_0"  value="" readonly placeholder="Select date"/>
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text"><i class="la la-calendar-o"></i></span>
+                                                        </div>
+                                                        <div class="invalid-feedback">This field is required.</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 text-right">
+                                                    <button type="button" class="btn btn-danger btn-sm removeLeaseRentalCost">Remove</button>
+                                                </div>
+                                                <hr>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 text-center">
+                                            <button type="button" class="btn btn-info" id="addLeaseRentalCost">Add More</button>
+                                        </div>
+                                    </div>
+                                    <div class="kt-wizard-v3__form">
+                                        <div class="form-group">
+                                            <label>Electricity</label>
+                                            <select name="lease[electricityType]" id="electricityTypeSelect" class="form-control">
+                                                <option value="">Select Electricity</option>
+                                                {% for electricityType in electricityTypes %}
+                                                    <option value="{{ electricityType.id }}" {{ (lease.electricityType is defined and lease.electricityType.id is defined and lease.electricityType.id == electricityType.id) ? 'selected' : '' }}>{{ electricityType.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group" id="electricityFixedInput" style="{{ (lease.electricityType is defined and lease.electricityType.id is defined and lease.electricityType.id == 3) ? '' : 'display: none;' }}">
+                                            <label>Electricity Fixed Amount</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                <input type="number" class="form-control" name="lease[electricityFixed]" placeholder="Electricity Fixed Amount" value="{{ lease.electricityFixed }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Other Utility Costs</label>
+                                            <select name="lease[otherUtilityCost][]" multiple id="kt_select2_otherUtilityCost" class="form-control kt-select2" style="width: 100%;">
+                                                <option></option>
+                                                {% for otherUtilityCostCategory in otherUtilityCostCategories %}
+                                                    <option value="{{ otherUtilityCostCategory.id }}">{{ otherUtilityCostCategory.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <div class="invalid-feedback">This field is required.</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Frequency of lease payments</label>
+                                            <select name="lease[frequencyOfLeasePayments]" class="form-control">
+                                                <option value="">Select a Frequency of lease payments</option>
+                                                <option value="monthly" {{ (lease.frequencyOfLeasePayments is defined and lease.frequencyOfLeasePayments == 'monthly') ? 'selected' : '' }}>Monthly</option>
+                                                <option value="annually" {{ (lease.frequencyOfLeasePayments is defined and lease.frequencyOfLeasePayments == 'annually') ? 'selected' : '' }}>Annually</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="kt-heading kt-heading--sm">Escalation</div>
+                                <div class="kt-form__section kt-form__section--first">
+                                    <div class="kt-wizard-v3__form">
+                                        <div class="form-group">
+                                            <label>Annual Escalation Type</label>
+                                            <select name="lease[annualEscalationType]" class="form-control" id="annualEscalationTypeSelect">
+                                                <option value="">Select Annual Escalation Type</option>
+                                                <option value="percentage" {{ (lease.annualEscalationType is defined and lease.annualEscalationType == 'percentage') ? 'selected' : '' }}>Fixed Percentage</option>
+                                                <option value="cpi" {{ (lease.annualEscalationType is defined and lease.annualEscalationType == 'cpi') ? 'selected' : '' }}>CPI Linked</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" id="annualEscalationFixed" style="{{ (lease.annualEscalationType is defined and lease.annualEscalationType != 'percentage') ? 'display: none;' : '' }}">
+                                            <label>Annual Escalation %</label>
+                                            <input type="number" class="form-control" name="lease[annualEscalation]" id="annualEscalationFixedInput" value="{{ lease.annualEscalation }}" placeholder="Annual Escalation %" >
+                                        </div>
+                                        <div class="form-group" id="annualEscalationCpi" style="{{ (lease.annualEscalationType is defined and lease.annualEscalationType == 'cpi') ? '' : 'display: none;' }}">
+                                            <label>Annual Escalation %</label>
+                                            <select class="form-control" name="lease[annualEscalationCpi]" id="annualEscalationCpiSelect">
+                                                <option value="">CPI plus x%</option>
+                                                <option value="0.5" {{ (lease.annualEscalationCpi == 0.5) ? 'selected' : '' }}>CPI plus 0.5%</option>
+                                                <option value="1" {{ (lease.annualEscalationCpi == 1) ? 'selected' : '' }}>CPI plus 1%</option>
+                                                <option value="1.5" {{ (lease.annualEscalationCpi == 1.5) ? 'selected' : '' }}>CPI plus 1.5%</option>
+                                                <option value="2" {{ (lease.annualEscalationCpi == 2) ? 'selected' : '' }}>CPI plus 2%</option>
+                                                <option value="2.5" {{ (lease.annualEscalationCpi == 2.5) ? 'selected' : '' }}>CPI plus 2.5%</option>
+                                                <option value="3" {{ (lease.annualEscalationCpi == 3) ? 'selected' : '' }}>CPI plus 3%</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>First escalation month</label>
+                                            <select name="lease[annualEscalationDate]" class="form-control">
+                                                <option value="">Select a First escalation month</option>
+                                                <option value="12month" {{ (lease.annualEscalationDate is defined and lease.annualEscalationDate == '12month') ? 'selected' : '' }}>12 months from start of lease</option>
+                                                <option value="1" {{ (lease.annualEscalationDate is defined and lease.annualEscalationDate == 1) ? 'selected' : '' }}>January</option>
+                                                <option value="2" {{ (lease.annualEscalationDate is defined and lease.annualEscalationDate == 2) ? 'selected' : '' }}>February</option>
+                                                <option value="3" {{ (lease.annualEscalationDate is defined and lease.annualEscalationDate == 3) ? 'selected' : '' }}>March</option>
+                                                <option value="4" {{ (lease.annualEscalationDate is defined and lease.annualEscalationDate == 4) ? 'selected' : '' }}>April</option>
+                                                <option value="5" {{ (lease.annualEscalationDate is defined and lease.annualEscalationDate == 5) ? 'selected' : '' }}>May</option>
+                                                <option value="6" {{ (lease.annualEscalationDate is defined and lease.annualEscalationDate == 6) ? 'selected' : '' }}>June</option>
+                                                <option value="7" {{ (lease.annualEscalationDate is defined and lease.annualEscalationDate == 7) ? 'selected' : '' }}>July</option>
+                                                <option value="8" {{ (lease.annualEscalationDate is defined and lease.annualEscalationDate == 8) ? 'selected' : '' }}>August</option>
+                                                <option value="9" {{ (lease.annualEscalationDate is defined and lease.annualEscalationDate == 9) ? 'selected' : '' }}>September</option>
+                                                <option value="10" {{ (lease.annualEscalationDate is defined and lease.annualEscalationDate == 10) ? 'selected' : '' }}>October</option>
+                                                <option value="11" {{ (lease.annualEscalationDate is defined and lease.annualEscalationDate == 11) ? 'selected' : '' }}>November</option>
+                                                <option value="12" {{ (lease.annualEscalationDate is defined and lease.annualEscalationDate == 12) ? 'selected' : '' }}>December</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="kt-heading kt-heading--sm">Deposit</div>
+                                <div class="kt-form__section kt-form__section--first">
+                                    <div class="kt-wizard-v3__form">
+                                        <div class="form-group row">
+                                            <label class="col-sm-6 col-form-label">Deposit Payable</label>
+                                            <div class="col-sm-6">
+                                                <span class="kt-switch">
+                                                    <label>
+                                                        <input type="checkbox" name="lease[depositStatus]" id="leaseDepositStatus" {{ (lease.depositStatus is defined and lease.depositStatus == true) ? 'checked' : '' }}/>
+                                                        <span></span>
+                                                    </label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="deposit-fields" style="{{ (lease.depositStatus is defined and lease.depositStatus == true) ? '' : 'display:none;' }}">
+                                            <div class="form-group">
+                                                <label>Deposit Type</label>
+                                                <select name="lease[depositType]" class="form-control">
+                                                    <option value="">Select Deposit Type</option>
+                                                    {% for depositType in depositTypes %}
+                                                        <option value="{{ depositType.id }}" {{ (lease.depositType is defined and lease.depositType.id is defined and lease.depositType.id == depositType.id) ? 'selected' : '' }}>{{ depositType.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Deposit Amount</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                    <input type="number" class="form-control" name="lease[depositAmount]" id="depositAmountValue" placeholder="Deposit Amount" value="{{ lease.depositAmount }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end: Form Wizard Step 2-->
+
+                            <!--begin: Form Wizard Step 3-->
+                            <div class="kt-wizard-v3__content" data-ktwizard-type="step-content">
+                                <div class="kt-heading kt-heading--md">Lease Supporting Documents</div>
+                                <div class="kt-form__section kt-form__section--first">
+                                    <div class="kt-wizard-v3__form" id="documentsForm">
+                                        <div class="document-items">
+                                            {% if leaseDocuments is defined and leaseDocuments is not empty %}
+                                                {% for leaseDocument in leaseDocuments %}
+                                                    <div class="document-item">
+                                                        <input type="hidden" value="{{ leaseDocument.id }}" name="document[{{ loop.index }}][id]">
+                                                        <div class="form-group">
+                                                            <label>Type</label>
+                                                            <select name="document[{{ loop.index }}][type]" class="form-control">
+                                                                <option value="">Select a Document Type</option>
+                                                                {% for documentType in documentsTypes %}
+                                                                    <option value="{{ documentType.id }}" {{ (leaseDocument.type is defined and leaseDocument.type.id is defined and leaseDocument.type.id == documentType.id) ? 'selected' : '' }}>
+                                                                        {{ documentType.name }}
+                                                                    </option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <label class="col-12 col-form-label">Upload File:</label>
+                                                            <div class="col-12">
+                                                                <div class="upload-file-container {{ (leaseDocument.document is defined and leaseDocument.document is not empty) ? 'uploaded' : '' }}">
+                                                                    <input type="hidden" name="document[{{ loop.index }}][name]" value="{{ leaseDocument.name }}">
+                                                                    <input type="hidden" class="upload-file-container__fake-upload" name="document[{{ loop.index }}][document]" value="{{ leaseDocument.document }}">
+                                                                    <input  type="file" name="document[{{ loop.index }}][document]" hidden="hidden" class="documentInput upload-file-container__custom-upload">
+                                                                    <button class="upload-file-container__upload-button btn btn-sm btn-info">
+                                                                        <i class="fas fa-plus-circle"></i>
+                                                                        <span>Choose a file</span>
+                                                                    </button>
+                                                                    <div class="upload-file-container__file-uploaded">
+                                                                        <div class="upload-file-container__close">
+                                                                            <i class="fa fa-times"></i>
+                                                                        </div>
+                                                                        <i class="fas fa-cloud-download-alt"></i>
+                                                                        <span class="upload-file-container__file-name">{{ (leaseDocument.name is defined and leaseDocument.name is not empty) ? leaseDocument.name : '' }}</span>
+                                                                        <span class="upload-file-container__file-date">
+                                                                        {{ (leaseDocument.created is defined and leaseDocument.created is not empty) ? leaseDocument.created|date('d M Y') : '' }}
+                                                                    </span>
+                                                                    </div>
+                                                                    <div class="text-danger" style="display: none;">This field is required.</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 text-right">
+                                                            <button type="button" class="btn btn-danger btn-sm removeDocument">Remove Document</button>
+                                                        </div>
+                                                        <hr>
+                                                    </div>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 text-center">
+                                                <button type="button" class="btn btn-info" id="addDocument">Add Supporting Document</button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="form-group">
+                                            <label>Status Of Lease Documentation</label>
+                                            <select name="lease[documentStatus]" class="form-control">
+                                                <option value="">Select a Status Of Lease Documentation</option>
+                                                {% for documentStatus in documentsStatuses %}
+                                                    <option value="{{ documentStatus.id }}" {{ (lease.documentStatus is defined and lease.documentStatus.id is defined and lease.documentStatus.id == documentStatus.id) ? 'selected' : '' }}>{{ documentStatus.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!--end: Form Wizard Step 3-->
+
+                            <!--begin: Form Wizard Step 4-->
+                            <div class="kt-wizard-v3__content" data-ktwizard-type="step-content">
+                                <div class="kt-heading kt-heading--md">Management</div>
+                                <div class="kt-form__section kt-form__section--first">
+                                    <div class="kt-wizard-v3__form">
+                                        <div class="form-group row">
+                                            <label class="col-sm-6 col-form-label">Agent to Manage</label>
+                                            <div class="col-sm-6">
+                                                <span class="kt-switch">
+                                                    <label>
+                                                        <input type="checkbox" name="lease[agentStatus]" id="leaseAgentStatus" {{ (lease.agentStatus is defined and lease.agentStatus == true) ? 'checked' : '' }}/>
+                                                        <span></span>
+                                                    </label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="agent_fields" style="{{ (lease.agentStatus == true) ? '' : 'display:none' }}">
+                                            <div class="form-group">
+                                                <label>Allocated To</label>
+                                                <select class="form-control" name="lease[allocated]">
+                                                    <option value="">Select a User</option>
+                                                    {% for user in users %}
+                                                        <option value="{{ user.id }}" {{ (lease.allocated.id is defined and lease.allocated.id == user.id) ? 'selected' : '' }}>
+                                                            {{ user.firstName ~ ' ' ~ user.lastName }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                                                <div class="form-group">
+                                                    <label>Agent Fee</label>
+                                                    <select class="form-control" name="lease[fee]" id="feeTypeSelect">
+                                                        <option value="">Select a Exprop Fee Type</option>
+                                                        <option value="1" {{ lease.fee == 1 ? 'selected' : '' }}>% of monthly lease</option>
+                                                        <option value="2" {{ lease.fee == 2 ? 'selected' : '' }}>% of saving</option>
+                                                        <option value="3" {{ lease.fee == 3 ? 'selected' : '' }}>Fixed Monthly Fee</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group" id="feePercentage" style="{{ (lease.fee == 1 or lease.fee == 2) ? '' : 'display:none;' }}">
+                                                    <label>Agent Fee %</label>
+                                                    <input type="number" class="form-control" id="feePercentageInput" name="lease[feeValue1]" value="{{ (lease.fee != 3) ? lease.feeValue : '' }}" placeholder="Exprop Fee %" />
+                                                </div>
+                                                <div class="form-group" id="feeAmount" style="{{ (lease.fee == 3) ? '' : 'display:none;' }}">
+                                                    <label>Agent Fee Amount</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                        <input type="number" class="form-control" id="feeAmountInput" name="lease[feeValue2]" value="{{ (lease.fee == 3) ? lease.feeValue : '' }}" placeholder="Exprop Fee Amount" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-12">Agent Fee Duration</label>
+                                                    <div class="col-sm-6">
+                                                        <div class="kt-checkbox-inline">
+                                                            <label class="kt-checkbox kt-checkbox--bold kt-checkbox--brand">
+                                                                <input type="checkbox" id="feeDurationCheckbox" name="feeDurationCheckbox" {{ (lease.feeDuration == "all") ? 'checked' : '' }} value="all">
+                                                                Duration of the lease agreement
+                                                                <span></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <input type="number" id="feeDurationInput" {{ (lease.feeDuration == "all") ? 'disabled' : '' }} class="form-control" name="lease[feeDuration]" value="{{ (lease.feeDuration == 'all') ? '' : lease.feeDuration }}" placeholder="Enter number of months" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Agent Fee Escalation</label>
+                                                    <select name="lease[feeEscalation]" class="form-control">
+                                                        <option value="">Select Agent Fee Escalation</option>
+                                                        <option value="1" {{ lease.fee == 1 ? 'selected' : '' }}>No Escalation</option>
+                                                        <option value="2" {{ lease.fee == 2 ? 'selected' : '' }}>As per new lease terms</option>
+                                                    </select>
+                                                </div>
+                                            {% endif %}
+                                            <div class="form-group">
+                                                <label>Proposed Lease by Landlord</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                    <input type="number" class="form-control" id="proposedLeaseInput" name="lease[proposedLease]" value="{{ lease.proposedLease }}" placeholder="Proposed Lease by Landlord" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Target Renewal Rental</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                    <input type="number" class="form-control" name="lease[targetRenewalRental]" value="{{ lease.targetRenewalRental }}" placeholder="Target Renewal Rental" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Target Renewal Escalation %</label>
+                                                <input type="number" class="form-control" id="targetRenewalEscalationInput" name="lease[targetRenewalEscalation]" value="{{ lease.targetRenewalEscalation }}" placeholder="Target Renewal Escalation" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Agent Saving</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                    <input type="number" class="form-control" id="savingAmountInput" readonly name="agentData[savingAmount]" value="{{ (agentData.savingAmount is defined) ? agentData.savingAmount : '' }}" placeholder="Agent Saving" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Agent Saving %</label>
+                                                <input type="number" class="form-control" readonly id="savingPercentageInput" name="agentData[savingPercentage]" value="{{ (agentData.savingPercentage is defined) ? agentData.savingPercentage : '' }}" placeholder="Agent Saving %" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Agent Billing</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend"><span class="input-group-text">{{ currencySymbol }}</span></div>
+                                                    <input type="number" class="form-control" readonly id="billingValueInput" name="agentData[billingValue]" value="{{ (agentData.billingValue is defined) ? agentData.billingValue : '' }}" placeholder="Agent Billing" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Escalation Saving %</label>
+                                                <input type="number" class="form-control" readonly id="escalationSavingInput" name="agentData[escalationSaving]" value="{{ (agentData.escalationSaving is defined) ? agentData.escalationSaving : '' }}" placeholder="Escalation Saving" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end: Form Wizard Step 4-->
+
+                            <!--begin: Form Actions -->
+                            <div class="kt-form__actions">
+                                <button class="btn btn-secondary btn-md btn-tall btn-wide kt-font-bold kt-font-transform-u" data-ktwizard-type="action-prev">
+                                    Previous
+                                </button>
+                                <a id="formSubmitBtn" class="btn btn-success btn-md btn-tall btn-wide kt-font-bold kt-font-transform-u text-white" data-ktwizard-type="action-submit" style="cursor: pointer;">
+                                    Create
+                                </a>
+                                <button class="btn btn-brand btn-md btn-tall btn-wide kt-font-bold kt-font-transform-u" data-ktwizard-type="action-next">
+                                    Next Step
+                                </button>
+                            </div>
+                            <!--end: Form Actions -->
+                            <input type="hidden" name="submit1" value="send">
+                        </form>
+                        <!--end: Form Wizard Form-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade show" id="modalCheckLease" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Exist Lease</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Starting date of new lease is before
+                        <span class="text-danger">EXPIRY</span>
+                        of old lease, do you want to change current lease
+                        <span class="text-danger">EXPIRY</span>
+                        date to <span class="font-weight-bold" id="checkLeaseDate"></span>?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-success" id="checkLeaseBtn">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('assets/vendors/general/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/select2/dist/js/select2.full.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/jquery-form/dist/jquery.form.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/jquery-validation/dist/jquery.validate.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/custom/js/vendors/jquery-validation.init.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/general/bootstrap-switch/dist/js/bootstrap-switch.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/vendors/custom/js/vendors/bootstrap-switch.init.js') }}" type="text/javascript"></script>
+
+    <script>
+        var rentalCostCategories = [];
+        {% for rentalCostCategory in rentalCostCategories %}
+        rentalCostCategories.push({
+            id: '{{ rentalCostCategory.id }}',
+            name: '{{ rentalCostCategory.name }}',
+        });
+        {% endfor %}
+        var documentTypes = [];
+        {% for documentType in documentsTypes %}
+        documentTypes.push({
+            id: '{{ documentType.id }}',
+            name: '{{ documentType.name }}',
+        });
+        {% endfor %}
+        var rentalCostIndex = {{ rentalCosts|length }};
+        var documentIndex = {{ leaseDocuments|length }};
+
+        var leaseTypeValue = [];
+        {% for type in lease.type %}
+            leaseTypeValue.push('{{ type.id }}')
+        {% endfor %}
+        var otherUtilityCostValue = [];
+        {% for cost in lease.otherUtilityCost %}
+            otherUtilityCostValue.push('{{ cost.id }}')
+        {% endfor %}
+
+        var notesIndex = {{ leaseNotes|length }};
+
+        var percentage = {{ percentage }};
+
+        var currencySymbol = '{{ currencySymbol }}';
+    </script>
+
+    <script src="{{ asset('assets/js/pages/lease_add.js') }}" type="text/javascript"></script>
+{% endblock %}

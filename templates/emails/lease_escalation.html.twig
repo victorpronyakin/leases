@@ -1,0 +1,6 @@
+{% extends 'emails/template.html.twig' %}
+
+{% block content %}
+    This email is a reminder that the lease at {{ siteNumber }} - {{ siteName }}  increased by {{ currentEscalation }}% from R{{ currentRental }} to R{{ newRental }} as per the current lease agreement.
+{% endblock %}
+

@@ -1,0 +1,19 @@
+{% extends 'emails/template.html.twig' %}
+
+{% block content %}
+    This email is a reminder that you have the option to renew your lease which must be renewed by {{ renewalDate }}.
+    <br><br>
+    Details of the lease are as follows:<br>
+    Site Number: {{ siteNumber }}<br>
+    Site Name: {{ siteName }}<br>
+    Landlord: {{ landlordName }}<br>
+    Contact 1: {{ landlordContact1 }}<br>
+    Contact 2: {{ landlordContact2 }}<br>
+    Lease Start Date: {{ leaseStartDate }}<br>
+    Lease Termination Date: {{ leaseEndDate }}<br>
+    Current Annual Escalation: {{ currentEscalation }}%<br>
+    Current Payment Frequency: {{ frequencyPayment }}<br>
+    Electricity Payment Type: {{ electricityType }}<br>
+    Current Monthly Rental: R{{ currentRental }}<br>
+{% endblock %}
+

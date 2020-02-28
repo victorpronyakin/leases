@@ -1,0 +1,9 @@
+{% extends 'bundles/TwigBundle/Exception/layout.html.twig' %}
+
+{% block content %}
+    <h1 class="kt-error-v1__number">Oops...</h1>
+    <p class="kt-error-v1__desc">
+        Looks like something went wrong.<br>
+        We're working on it, <a href="{{ path('homepage') }}">return to the homepage</a>.
+    </p>
+{% endblock %}

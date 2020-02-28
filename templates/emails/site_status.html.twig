@@ -1,0 +1,10 @@
+{% extends 'emails/template.html.twig' %}
+
+{% block content %}
+    This email is a reminder that the site status for {{ siteNumber }} - {{ siteName }} has not been updated since ‘{{ siteStatusUpdate }}’.
+    <br><br>
+    Site Status: {{ siteStatus }}
+    <br><br>
+    Please remember to <a href="{{ link }}">CHANGE</a> the site status on the COLEASE platform
+{% endblock %}
+

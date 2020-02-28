@@ -1,0 +1,192 @@
+.upload-file-container {
+    position: relative;
+}
+
+.upload-file-container__file-uploaded {
+
+}
+
+.upload-file-container__custom-upload {
+    position: absolute;
+    cursor: pointer;
+    height: 100%;
+    opacity: .5;
+    width: 100%;
+    left: 0;
+    top: 0;
+}
+
+.upload-file-container__file-name {
+    width: calc(100% - 45px);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    overflow: hidden;
+    height: 1.2em;
+}
+
+.upload-file-container__file-date {
+    margin-top: 10px;
+}
+
+.upload-file-container button,
+.upload-file-container .upload-file-container__file-uploaded {
+    border: 1px solid #E2E5EC;
+    background: transparent;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px 0;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    left: 0;
+    top: 0;
+}
+
+.upload-file-container__close {
+    transition: .2s ease;
+    position: absolute;
+    cursor: pointer;
+    opacity: .7;
+    right: 9px;
+    top: 4px;
+}
+
+.upload-file-container__close:hover {
+    opacity: 1;
+}
+
+.upload-file-container.uploaded .upload-file-container__close i {
+    font-size: 21px !important;
+    color: red !important;
+}
+
+.upload-file-container .upload-file-container__file-uploaded {
+    display: none;
+}
+
+.upload-file-container.uploaded button {
+    display: none;
+}
+
+.upload-file-container.uploaded .upload-file-container__file-uploaded {
+    display: flex;
+}
+
+.upload-file-container .upload-file-container__message .message {
+    display: none;
+}
+
+.upload-file-container.empty .upload-file-container__message .message {
+    display: block;
+}
+
+.upload-file-container button:hover {
+    background: transparent !important;
+}
+
+.upload-file-container button i,
+.upload-file-container .upload-file-container__file-uploaded i {
+    font-size: 35px !important;
+    margin-bottom: 10px;
+    color: #5D78FF;
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.upload-file-container button span,
+.upload-file-container .upload-file-container__file-uploaded span{
+    color: #5D78FF;
+}
+
+.kt-menu__item.active a span {
+    color: #3E94FB !important;
+}
+
+.kt-menu__item.active i {
+    color: #3E94FB !important;
+}
+
+.table-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.table-actions a:first-child {
+    margin-right: 5px;
+}
+
+.kt-footer{
+    height: 71px;
+}
+
+.kt-container{
+    min-height: calc(100% - 71px);
+}
+
+#tableIssue_wrapper .row .col-sm-12{
+    overflow-x: auto;
+}
+
+.invoices > .invoices__item:last-child{
+    margin-bottom: 1rem !important;
+}
+
+.invoices__item{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 7px;
+}
+
+.invoices__item .invoices__item__remove{
+    margin-left: 7px;
+}
+
+.electricity-costs-item{
+    white-space: nowrap;
+    margin-bottom: 5px;
+}
+
+@media (max-width: 475px) {
+    .site-inventory-item .form-group{
+        flex-direction: column;
+        margin-bottom: 0;
+    }
+
+    .site-inventory-item > .text-right{
+        margin-top: 10px;
+    }
+
+    .site-inventory-item .form-group > .col-form-label,
+    .site-inventory-item .form-group > .col-10{
+        max-width: 100% !important;
+    }
+}
+
+@media (max-width: 575px) {
+    .mobile-buttons-container__left.text-right {
+        text-align: left !important;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 748px) {
+    .btn-info.editAddendumBtn {
+        margin-bottom: 10px;
+        width: 100%;
+    }
+
+    .btn-danger.removeAddendumBtn{
+        width: 100%;
+    }
+}
+
+@media (max-width: 1024px) {
+    .kt-header__topbar .btn.btn-link {
+        color: #74788d;
+        border: 1px solid #e8ecfa;
+    }
+}
